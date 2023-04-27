@@ -1,0 +1,59 @@
+
+  <head>
+    <title>opros</title>
+    <head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+</head>
+  </head>
+  <body>
+      <h2>{{QuestionForm[PageNumber].text}} Вопрос номер: {{PageNumber}}</h2>
+<form action="{{PageNumber + 1}}" method="post">
+  {% for q in options_conf_text%}
+      <p><p class="conf_text" value="{{q.text}}">{{q.text}}</p>
+    <select class="select_1" onchange="save(this)" name="{{q.text}}">
+       {% for j in option_confs  %}
+        {% if j.option_conf_1 !=  None%}
+    <option value="{{j.option_conf_1}}" class="option_1">{{j.option_conf_1}}</option>
+        {%endif%}
+       {% endfor %}
+   </select>
+
+   <select class="select_2" onchange="save(this)">
+       {% for i in option_confs %}
+       {% if i.option_conf_2 !=  None%}
+    <option value="{{i.option_conf_2}}", class="option_2" >{{i.option_conf_2}}</option>
+       {%endif%}
+       {% endfor %}
+   </select>
+</p>
+  {% endfor %}
+    <button id="show_resbutton">Следующий вопрос</button>
+    </form>
+      <a href="{{ url_for('quest', page = PageNumber-1) }}"> Предыдущий вопрос</a>
+  <script>
+    function save(){
+        var options_1 = document.getElementsByClassName("select_1");
+        var options_2 = document.getElementsByClassName("select_2");
+        var conf_text = document.getElementsByClassName("conf_text");
+        for (let i = 0; i <= options_1.length; i++){//сохраняем левый option
+            try{
+                localStorage.setItem(conf_text[i].getAttribute("value") + "_1_" + String(i), options_1[i].value);
+            }
+            catch (e){
+                console.log(e);
+            }
+        }
+       for (let i = 0; i <= options_2.length; i++){//сохраняем правый option
+            try{
+                localStorage.setItem(conf_text[i].getAttribute("value") + "_2_" + String(i), options_2[i].value);
+            }
+            catch (e){
+                console.log(e);
+            }
+        }
+    }
+  </script>>
+  </body>
+</html>
+

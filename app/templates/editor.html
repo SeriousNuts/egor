@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Редактор вопросов</title>
+
+</head>
+<body>
+<h1>список вопросов</h1>
+<table border="1">
+    <tr>
+    <th>id</th>
+    <th>text</th>
+    <th>type</th>
+    <th>question_number</th>
+   </tr>
+    {%for q in questions%}
+    <tr>
+    <th>{{q.id}}</th>
+    <th>{{q.text}}</th>
+    <th>{{q.type}}</th>
+    <th>{{q.question_number}}</th>
+    </tr>
+    {% endfor %}
+    </table>
+<h1>ответы на вопросы</h1>
+<table border="2">
+    <tr>
+    <th>id</th>
+    <th>text</th>
+    <th>question_id</th>
+   </tr>
+    {%for o in options%}
+    <tr>
+    <th>{{o.id}}</th>
+    <th>{{o.text}}</th>
+    <th>{{o.question_id}}</th>
+    </tr>
+    {% endfor %}
+    </table>
+<h2>Добавить вопрос</h2>
+<form method="POST" action="/editor/add_quest">
+<h3>text</h3>
+    <input class="text" name="text" />
+    <h3>type</h3>
+    <input class="type" name="type" />
+    <input type="submit" value="Занести вопрос в базу" />
+    </form>
+<h2>Добавить ответ на вопрос</h2>
+<form method="POST" action="/editor/add_option">
+<h3>текст ответа</h3>
+    <input class="text" name="text_o" />
+    <h3>id вопроса к которому относится ответ</h3>
+    <input class="id" name="question_id" />
+    <input type="submit" value="Добавить ответ" />
+    </form>
+</body>
+</html>

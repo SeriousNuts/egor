@@ -1,0 +1,6 @@
+alembic~=1.9.4
+docxtpl==0.16.6
+Flask~=2.2.3
+SQLAlchemy~=2.0.4
+Werkzeug~=2.2.3
+WTForms==3.0.1
