@@ -1,3 +1,4 @@
+from flask_login import UserMixin
 from sqlalchemy import Table, Column
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm import DeclarativeBase
@@ -79,7 +80,7 @@ class Result(db.Model):
     resultJSON = db.Column(db.TEXT)
 
 
-class User(db.Model):
+class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(1200))
     password = db.Column(db.String(1200))
@@ -87,6 +88,7 @@ class User(db.Model):
 
     def set_password(self, password):
         self.password = generate_password_hash(password)
+        return self.password
 
     def check_password(self, password):
         return check_password_hash(self.password, password)

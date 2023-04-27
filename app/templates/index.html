@@ -1,6 +1,8 @@
 
   <head>
     <title>opros</title>
+      {% extends "base.html" %}
+    {% block content %}
   </head>
   <body>
       <h2>{{QuestionForm[PageNumber].text}}? Вопрос номер: {{PageNumber}}</h2>
@@ -180,4 +182,5 @@ function pickInfoSystem(value)
   }
   </script>
   </body>
+  {% endblock %}
 </html>

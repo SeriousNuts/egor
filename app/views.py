@@ -1,21 +1,37 @@
 import json
 import random
+from urllib.parse import urlparse, urljoin
 
+import uuid0 as uuid0
 from flask import render_template, request, redirect, url_for
 from flask import session as flask_session
+from flask_login import login_required, LoginManager, login_user, current_user, UserMixin, logout_user
 
-from app import app as app
+from app import app as app, login_manager
 from app import db, models
-from app.forms.LoginForm import LoginForm
+from app.forms.LoginForm import LoginForm, RegistrationForm
 from app.makefile import Report, makefile
 from app.models import Question, Option, ObjectOfInfluence, OptionConf, Result, User, \
     ComponentObjectOfInfluence, OptionConfs, Threat, TypeOfNegativeConseq, TypeOfRisks
 
 
+def is_safe_url(target):
+    ref_url = urlparse(request.host_url)
+    test_url = urlparse(urljoin(request.host_url, target))
+    return test_url.scheme in ('http', 'https') and \
+           ref_url.netloc == test_url.netloc
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    return db.session.query(User).get(user_id)
+
+
 @app.route('/quest/>', methods=['GET', 'POST'])
 @app.route('/quest/<int:page>', methods=['GET', 'POST'])
+@login_required
 def quest(page):
-    print(page ,request.form.to_dict())
+    print(page, request.form.to_dict())
     threats = []
     question = Question.query.order_by(Question.question_number.asc()).all()
     options_list = Option.query.filter(
@@ -114,6 +130,7 @@ def quest(page):
 
 @app.route('/editor/', methods=['GET', 'POST'])
 @app.route('/editor/add_quest', methods=['GET', 'POST'])  # добавление вопросов
+@login_required
 def editor():
     if request.method == 'POST':
         try:
@@ -133,6 +150,7 @@ def editor():
 
 
 @app.route('/editor/add_option', methods=['GET', 'POST'])  # добавление ответов
+@login_required
 def editor_option():
     if request.method == 'POST':
         try:
@@ -152,6 +170,7 @@ def editor_option():
 
 
 @app.route('/quest/result', methods=['GET', 'POST'])
+@login_required
 def set_result():
     report = Report()
     report.init('Отчёт',
@@ -169,6 +188,7 @@ def set_result():
 
 @app.route('/quest/show_result/', methods=['GET', 'POST'])
 @app.route('/quest/show_result/<int:result_id>', methods=['GET', 'POST'])
+@login_required
 def show_result(result_id):
     results = Result.query.filter(
         Result.session_id == result_id
@@ -187,45 +207,65 @@ def show_result(result_id):
     return render_template('result.html', results=result, result_id=result_id)
 
 
-@app.route('/login', methods=['GET', 'POST'])
-def login():
+@app.route('/login', defaults={'errors': None}, methods=['GET', 'POST'])
+@app.route('/login/<errors>')
+def login(errors=None):
     form = LoginForm()
-    return render_template('login.html', title='Вход', form=form)
+    return render_template('login.html', title='Вход', form=form, error=errors)
+
+
+@app.route('/')
+@app.route('/main')
+@login_required
+def main_page():
+    return render_template('main_page.html')
 
 
 @app.route('/check_login', methods=['GET', 'POST'])
 def check_login():
     if request.method == 'POST':
-        username = request.form.get('username')
+        name = request.form.get('username')
         password = request.form.get('password')
         auth = User.query.filter(
-            User.name == username and User.password == password
-        )
-        if auth is not None:
-            # res = make_response("Setting a cookie")
-            # res.set_cookie('UUID', auth, max_age=60 * 60 * 24 * 365 * 2)
-            return redirect(url_for('quest', page=0), code=307)
+            User.name == name
+        ).first()
+        if auth is not None and auth.check_password(password):
+            login_user(auth)
+            return redirect(url_for('main_page'))
         else:
-            return redirect(url_for('login'))
+            return redirect(url_for('login', errors="Неверный логин или пароль"))
 
 
 @app.route('/register', methods=['GET', 'POST'])
 def register_form():
-    form = LoginForm()
+    form = RegistrationForm()
+    if form.validate_on_submit():
+        try:
+            newuser = User()
+            newuser.name = form.username.data
+            newuser.password = newuser.set_password(form.password.data)
+            newuser.UUID = str(uuid0.generate())
+            u: User = models.User(name=newuser.name, password=newuser.password, UUID=newuser.UUID)  # type: ignore
+            db.session.add(u)
+            db.session.commit()
+            return redirect(url_for('main_page'))
+        except Exception as e:
+            print(e)
     return render_template('register.html', title='Регистрация', form=form)
 
 
-@app.route('/register_user', methods=['GET', 'POST'])
-def register_user():
-    if request.method == 'POST':
-        username = request.form.get('username')
-        password = request.form.get('password')
-        try:
-            r = models.User(name=username, password=password)
-            db.session.add(r)
-            db.session.commit()
-        except:
-            db.session.rollback()
-        finally:
-            db.session.close()
-    return redirect(url_for('quest', page=0))
+@app.route('/personal_account')
+@login_required
+def personal_account():
+    user_reports = models.Report.query.filter(
+        models.Report.owner == current_user.name
+    ).all()
+    user = current_user
+    return render_template('personal_account.html', user=user, reports=user_reports)
+
+
+@app.route("/logout")
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('login'))

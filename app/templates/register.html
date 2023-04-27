@@ -3,10 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <title>Регистрация</title>
+    <style>
+        .register {
+            position: absolute;
+        }
+    </style>
 </head>
 <body>
+<div class="register">
 <h1>Регистрация</h1>
-    <form action="/register_user" method="post" novalidate>
+    <form action="/register" method="post" validate>
         {{ form.hidden_tag() }}
         <p>
             {{ form.username.label }}<br>
@@ -16,9 +22,14 @@
             {{ form.password.label }}<br>
             {{ form.password(size=32) }}
         </p>
+
         <p>
+            {{form.password_repeat.label}}<br>
+            {{form.password_repeat(size=32)}}
         </p>
-        <p><input type="submit" value="Зарегистрироваться"></p>
+        <p>{{form.submit_reg}}</p>
     </form>
+    <p><a href = "/login">Уже есть аккаунт? Войти</a></p>
+</div>
 </body>
 </html>

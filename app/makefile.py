@@ -25,7 +25,7 @@ class Report:
 
 
 def makefile(report):
-    template = str(Path(Path.cwd(), 'template.docx'))
+    template = DocxTemplate(str(Path(Path.cwd(), 'template.docx')))
 
     context = {
         'threat_sources': report.threat_sources,

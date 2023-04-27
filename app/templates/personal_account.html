@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Личный кабинет</title>
+</head>
+<body>
+{% extends "base.html" %}
+    {% block content %}
+
+
+<div class="user_info">
+    <h2>имя пользователя: {{user.name}}</h2>
+</div>
+<div class="user_reports">
+    {% for r in reports %}
+    <p>
+        <sp>отчёт {{r.name}} создан: {{r.date}} </sp><a href="{{ url_for('download', filename = r.name) }}">скачать</a>
+    </p>
+    {% endfor %}
+</div>
+{% endblock %}
+</body>
+</html>

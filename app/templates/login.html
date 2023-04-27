@@ -1,5 +1,12 @@
-<h1>Sign In</h1>
-    <form action="/check_login" method="post" novalidate>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Вход</title>
+</head>
+<body>
+<h1>Вход</h1>
+    <form action="/check_login" method="post">
         {{ form.hidden_tag() }}
         <p>
             {{ form.username.label }}<br>
@@ -10,5 +17,9 @@
             {{ form.password(size=32) }}
         </p>
         <p>{{ form.remember_me() }} {{ form.remember_me.label }}</p>
+        <p>{{ error }}</p>
         <p>{{ form.submit() }}</p>
     </form>
+<p><a href = "/register">Зарегистрироваться</a></p>
+</body>
+</html>
