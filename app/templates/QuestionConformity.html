@@ -19,7 +19,7 @@
        {% endfor %}
    </select>
 
-   <select class="select_2" onchange="save(this)">
+   <select class="select_2" onchange="save(this)" name="{{q.text}}_уровень'">
        {% for i in option_confs %}
        {% if i.option_conf_2 !=  None%}
     <option value="{{i.option_conf_2}}", class="option_2" >{{i.option_conf_2}}</option>

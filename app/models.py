@@ -43,7 +43,7 @@ class Threat(db.Model):
     text = db.Column(db.String(1200))
 
     def __repr__(self):
-        return '{}'.format(self.text)
+        return '{}'.format(str(self.id) + ' ' + self.text)
 
 
 class Option(db.Model):

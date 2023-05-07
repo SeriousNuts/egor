@@ -29,7 +29,7 @@ def load_user(user_id):
 
 @app.route('/quest/>', methods=['GET', 'POST'])
 @app.route('/quest/<int:page>', methods=['GET', 'POST'])
-@login_required
+#@login_required
 def quest(page):
     print(page, request.form.to_dict())
     threats = []
@@ -47,6 +47,8 @@ def quest(page):
         template = "index.html"
     else:
         template = "QuestionConformity.html"
+    if page == 1:
+        pass
     # условие для третьего вопроса, выводит в него только нужные объекты воздействия
     if page == 2:
         flask_session.clear()
@@ -65,7 +67,9 @@ def quest(page):
             if not flask_session.modified:
                 flask_session.modified = True
         options_list = components
-
+    if page == 3:
+        if not flask_session.modified:
+            flask_session.modified = True
     if page == 4:
         #   сохраняем результаты предыдущего вопроса в flask_session
         flask_session['threater'] = []
@@ -193,7 +197,7 @@ def show_result(result_id):
     results = Result.query.filter(
         Result.session_id == result_id
     ).all()
-    print(result_id)
+    #print(result_id)
     result = {}
     json_object = {}
     for obj in results:
