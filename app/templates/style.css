@@ -112,8 +112,24 @@ main {
     margin-bottom: 90px;
 }
 
-.tables__table {
+.list-group-item__link {
+    border-bottom: 1px solid transparent;
+    transition: border-bottom .3s, color .3s;
+}
 
+.list-group-item__link:hover {
+    border-bottom: 1px solid #ff4747;
+    color: #ff4747;
+}
+
+.user-report__link {
+    border-bottom: 1px solid transparent;
+    transition: border-bottom .3s, color .3s;
+}
+
+.user-report__link:hover {
+    border-bottom: 1px solid #ff4747;
+    color: #ff4747;
 }
 
 .container {
