@@ -1,58 +1,101 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
+
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe"
+        crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="./style.css">
     <title>Редактор вопросов</title>
-
 </head>
+
 <body>
-<h1>список вопросов</h1>
-<table border="1">
-    <tr>
-    <th>id</th>
-    <th>text</th>
-    <th>type</th>
-    <th>question_number</th>
-   </tr>
-    {%for q in questions%}
-    <tr>
-    <th>{{q.id}}</th>
-    <th>{{q.text}}</th>
-    <th>{{q.type}}</th>
-    <th>{{q.question_number}}</th>
-    </tr>
-    {% endfor %}
-    </table>
-<h1>ответы на вопросы</h1>
-<table border="2">
-    <tr>
-    <th>id</th>
-    <th>text</th>
-    <th>question_id</th>
-   </tr>
-    {%for o in options%}
-    <tr>
-    <th>{{o.id}}</th>
-    <th>{{o.text}}</th>
-    <th>{{o.question_id}}</th>
-    </tr>
-    {% endfor %}
-    </table>
-<h2>Добавить вопрос</h2>
-<form method="POST" action="/editor/add_quest">
-<h3>text</h3>
-    <input class="text" name="text" />
-    <h3>type</h3>
-    <input class="type" name="type" />
-    <input type="submit" value="Занести вопрос в базу" />
-    </form>
-<h2>Добавить ответ на вопрос</h2>
-<form method="POST" action="/editor/add_option">
-<h3>текст ответа</h3>
-    <input class="text" name="text_o" />
-    <h3>id вопроса к которому относится ответ</h3>
-    <input class="id" name="question_id" />
-    <input type="submit" value="Добавить ответ" />
-    </form>
+    <header class="header">
+        <div class="container">
+            <div class="header__inner">
+                <h1>Опрос по ГОСТу</h1>
+                <nav class="header-nav">
+                    <ul class="header-nav-list">
+                        <li class="header-nav-list__item">
+                            <a href="#" class="header-nav-list__link">Главная страница</a>
+                        </li>
+                        <li class="header-nav-list__item">
+                            <a href="#" class="header-nav-list__link">Личный кабинет</a>
+                        </li>
+                        <li class="header-nav-list__item">
+                            <a href="#" class="header-nav-list__link">Выйти из аккаунта</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+    <main>
+        <section>
+            <div class="container">
+                <div class="tables">
+                    <div class="tables__table">
+                        <h1>Список вопросов</h1>
+                        <table class="table table-success mt-4">
+                            <tr>
+                                <th>id</th>
+                                <th>text</th>
+                                <th>type</th>
+                                <th>question_number</th>
+                            </tr>
+                            <!-- {%for q in questions%} -->
+                            <tr>
+                                <th>{{q.id}}</th>
+                                <th>{{q.text}}</th>
+                                <th>{{q.type}}</th>
+                                <th>{{q.question_number}}</th>
+                            </tr>
+                            <!-- {% endfor %} -->
+                        </table>
+                    </div>
+                    <div class="tables__table">
+                        <h1>Ответы на вопросы</h1>
+                        <table class="table table-success mt-4">
+                            <tr>
+                                <th>id</th>
+                                <th>text</th>
+                                <th>question_id</th>
+                            </tr>
+                            <!-- {%for o in options%} -->
+                            <tr>
+                                <th>{{o.id}}</th>
+                                <th>{{o.text}}</th>
+                                <th>{{o.question_id}}</th>
+                            </tr>
+                            <!-- {% endfor %} -->
+                        </table>
+                    </div>
+                </div>
+                <h2>Добавить вопрос</h2>
+                <form method="POST" action="/editor/add_quest" class="d-flex flex-column" style="width: 50%;">
+                    <h4 class="mb-3">text</h4>
+                    <input class="form-control form-control-success" name="text" />
+                    <h4 class="my-3">type</h4>
+                    <input class="form-control form-control-success" name="type" />
+                    <button class="btn btn-danger my-4">Занести вопрос в базу</button>
+                </form>
+                <h2>Добавить ответ на вопрос</h2>
+                <form method="POST" action="/editor/add_option" class="d-flex flex-column" style="width: 50%;">
+                    <h4 class="mb-3">текст ответа</h4>
+                    <input class="form-control" name="text_o"/>
+                    <h4 class="my-3">id вопроса к которому относится ответ</h4>
+                    <input class="form-control" name="question_id" />
+                    <button class="btn btn-danger my-4">Добавить ответ</button>
+                </form>
+            </div>
+        </section>
+    </main>
+
 </body>
+
 </html>

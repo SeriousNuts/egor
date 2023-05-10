@@ -1,0 +1,149 @@
+body {
+    background-color: rgb(234, 255, 234);
+}
+
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+a {
+    text-decoration: none;
+    color: black;
+}
+
+main {
+    padding-top: 200px;
+}
+
+.header {
+    padding: 36px 0;
+    position: fixed;
+    width: 100%;
+    z-index: 2;
+}
+
+.header__inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #eaffea;
+}
+
+.header-nav-list {
+    display: flex;
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.header-nav-list__link {
+    font-weight: 500;
+    transition: color .5s;
+}
+
+.header-nav-list__item {
+    margin-right: 48px;
+    font-size: 18px;
+    border-color: rgb(255, 71, 71);
+    border-width: 2px;
+    border-top-color: transparent;
+    border-left-color: transparent;
+    border-right-color: transparent;
+    border-style: solid;
+    padding: 12px 16px;
+    transition: border-color .5s;
+}
+
+.header-nav-list__item:hover {
+    border-color: rgb(255, 71, 71);
+}
+
+.header-nav-list__item:hover .header-nav-list__link {
+    color: rgb(255, 71, 71);
+}
+
+.header-nav-list__item:last-child {
+    margin-right: 0;
+    border: 2px solid rgb(255, 71, 71);
+    border-radius: 50px;
+}
+
+.header-nav-list__item:last-child .header-nav-list__link {
+    color: rgb(255, 71, 71);
+}
+
+.quiz {
+
+}
+
+.quiz__inner {
+    display: flex;
+    flex-direction: column;
+}
+
+.quiz__inner h2 {
+    margin-bottom: 24px;
+}
+
+.card {
+    background-color: transparent;
+}
+
+.card-body {
+    display: flex;
+    flex-direction: column;
+}
+
+.card-body input {
+    width: max-content;
+}
+
+.checkboxes {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 24px;
+}
+
+.tables {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 90px;
+}
+
+.tables__table {
+
+}
+
+.container {
+    position: relative;
+    max-width: 1230px;
+    width: 100%;
+    padding: 0 15px;
+    margin: 0 auto;
+}
+
+@media (max-width: 1230px) {
+    .container {
+        max-width: 1022px;
+    }
+}
+
+@media (max-width: 1022px) {
+    .container {
+        max-width: 798px;
+    }
+}
+
+@media (max-width: 798px) {
+    .container {
+        max-width: 606px;
+    }
+}
+
+@media (max-width: 606px) {
+    .container {
+        max-width: 405px;
+    }
+}
