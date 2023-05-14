@@ -22,6 +22,9 @@ class ObjectOfInfluence(db.Model):
     question = db.Column(db.Integer, db.ForeignKey(Question.id))
     object_name = db.Column(db.String(1200), index=True, unique=True)
 
+    def __repr__(self):
+        return '{}'.format(self.object_name)
+
 
 class ThreatSource(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -43,7 +46,7 @@ class Threat(db.Model):
     text = db.Column(db.String(1200))
 
     def __repr__(self):
-        return '{}'.format(str(self.id) + ' ' + self.text)
+        return '{}'.format(str(self.id) + ' ' + self.ubi_name)
 
 
 class Option(db.Model):
@@ -72,6 +75,9 @@ class OptionConf(db.Model):  # вопросам с выбором соответ
     question_id = db.Column(db.Integer, db.ForeignKey(Question.id))
     confs = db.relationship('OptionConfs', backref='Option_conf',
                             lazy='dynamic')
+
+    def __repr__(self):
+        return '{}'.format(self.text)
 
 
 class Result(db.Model):

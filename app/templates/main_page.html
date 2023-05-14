@@ -11,39 +11,18 @@
         crossorigin="anonymous"></script>
     <link rel="stylesheet" href="../static/style.css">
     <title>Главная страница</title>
-    <!-- {% extends "base.html" %}
-    {% block content %} -->
+    {% extends "base.html" %}
+    {% block content %}
 </head>
 
 <body>
-    <header class="header">
-        <div class="container">
-            <div class="header__inner">
-                <h1>Опрос по ГОСТу</h1>
-                <nav class="header-nav">
-                    <ul class="header-nav-list">
-                        <li class="header-nav-list__item">
-                            <a href="#" class="header-nav-list__link">Главная страница</a>
-                        </li>
-                        <li class="header-nav-list__item">
-                            <a href="#" class="header-nav-list__link">Личный кабинет</a>
-                        </li>
-                    </ul>
-                </nav>
-            </div>
-        </div>
-    </header>
     <main>
         <section class="links">
             <div class="container">
                 <div class="links__inner">
                     <ul class="list-group">
                         <li class="list-group-item">
-                            <a href="/quest/0" class="list-group-item__link me-4">Гост-228322</a>
-                            <span>Описание</span>
-                        </li>
-                        <li class="list-group-item">
-                            <a href="/quest/0" class="list-group-item__link me-4">Гост-228322</a>
+                            <a href="/quest/0" class="list-group-item__link me-4">Построение модели угроз</a>
                             <span>Описание</span>
                         </li>
                     </ul>
@@ -53,5 +32,5 @@
         </section>
     </main>
 </body>
-<!-- {% endblock %} -->
+{% endblock %}
 </html>

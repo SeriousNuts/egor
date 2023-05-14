@@ -13,42 +13,25 @@
     <title>Личный кабинет</title>
 </head>
 <body>
-<!-- {% extends "base.html" %} -->
-    <!-- {% block content %} -->
-    <header class="header">
-        <div class="container">
-            <div class="header__inner">
-                <h1>Опрос по ГОСТу</h1>
-                <nav class="header-nav">
-                    <ul class="header-nav-list">
-                        <li class="header-nav-list__item">
-                            <a href="#" class="header-nav-list__link">Главная страница</a>
-                        </li>
-                        <li class="header-nav-list__item">
-                            <a href="#" class="header-nav-list__link">Выйти из аккаунта</a>
-                        </li>
-                    </ul>
-                </nav>
-            </div>
-        </div>
-    </header>
+    {% extends "base.html" %}
+    {% block content %}
     <main>
         <section class="user">
             <div class="container">
                 <div class="user__inner">
                     <h2>Имя пользователя: {{user.name}}</h2>
                     <ul class="list-group">
-                        <!-- {% for r in reports %} -->
+                        {% for r in reports %}
                         <li class="list-group-item">
                             <span class="me-4">Отчёт {{r.name}}, Создан: {{r.date}}</span>
                             <a href="{{ url_for('download', filename = r.name) }}" class="user-report__link">Скачать</a>
                         </li>
-                        <!-- {% endfor %} -->
+                         {% endfor %}
                     </ul>
                 </div>
             </div>
         </section>
     </main>
-<!-- {% endblock %} -->
+{% endblock %}
 </body>
 </html>

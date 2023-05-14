@@ -12,83 +12,109 @@
         crossorigin="anonymous"></script>
     <link rel="stylesheet" href="../static/style.css">
     <title>Опрос</title>
+        {% extends "base.html" %}
+    {% block content %}
 </head>
-
 <body>
-    <header class="header">
-        <div class="container">
-            <div class="header__inner">
-                <h1>Опрос по ГОСТу</h1>
-                <nav class="header-nav">
-                    <ul class="header-nav-list">
-                        <li class="header-nav-list__item">
-                            <a href="#" class="header-nav-list__link">Главная страница</a>
-                        </li>
-                        <li class="header-nav-list__item">
-                            <a href="#" class="header-nav-list__link">Личный кабинет</a>
-                        </li>
-                    </ul>
-                </nav>
-            </div>
-        </div>
-    </header>
     <main>
         <section class="quiz">
             <div class="container">
                 <div class="quiz__inner">
                     <h2>{{QuestionForm[PageNumber].text}} Вопрос номер: {{PageNumber}}</h2>
                     <form action="{{PageNumber + 1}}" method="post">
-                        <!-- {% for q in options_conf_text%} -->
-                        <span value="{{q.text}}">{{q.text}}</span>
+                         {% for q in options_conf_text%}
+                        <span value="{{q.text}}">{{q}}</span>
+                        <div class="selected-options" value="{{q}}" id="{{q}}"></div>
                         <div class="d-flex justify-content-between">
-                            <select name="{{q.text}}" id="" class="form-select" onchange="save(this)" style="width: 45%;">
-                                <!-- {% for j in option_confs %}
-                                {% if j.option_conf_1 != None%} -->
+                            <select name="{{q.text}}" id="" class="form-select"  style="width: 45%;">
+                                 {% for j in option_confs %}
+                                {% if j.option_conf_1 != None%}
                                 <option value="{{j.option_conf_1}}">{{j.option_conf_1}}</option>
-                                <!-- {%endif%}
-                                {% endfor %} -->
+                                 {%endif%}
+                                {% endfor %}
                             </select>
-                            <select name="{{q.text}}_уровень'" id="" class="form-select" onchange="save(this)" style="width: 45%;">
-                                <!-- {% for i in option_confs %}
-                                {% if i.option_conf_2 != None%} -->
+                            {% if PageNumber != 8 %}
+                            {% if PageNumber != 2 %}
+                            <select name="{{q.text}}_уровень'"  class="form-select" style="width: 45%;">
+                                < {% for i in option_confs %}
+                                {% if i.option_conf_2 != None%}
                                 <option value="{{i.option_conf_2}}">{{i.option_conf_2}}</option>
-                                <!-- {%endif%}
-                                {% endfor %} -->
+                                 {%endif%}
+                                {% endfor %}
                             </select>
+                            {%endif%}
+                            {%endif%}
                         </div>
-                        <!-- {% endfor %} -->
+                         {% endfor %}
                         <div class="btn-group mt-4">
                             <a href="{{ url_for('quest', page = PageNumber-1) }}" class="btn btn-danger">Предыдущий вопрос</a>
-                            <button class="btn btn-danger" id="show_resbutton">Следующий вопрос</button>
+                            {% if PageNumber != Questionslength - 1%}
+                                    <button id="show_resbutton" class="btn btn-danger" onclick="save()">Следующий вопрос</button>
+                                    {% endif %}
+
                         </div>
+                    </form>
+                           <form action="result">
+                         {% if PageNumber == Questionslength - 1%}
+                        <button id="result_button" onclick="makeRequest()" class="btn btn-danger mt-4">Показать результаты</button>
+                         {% endif %}
                     </form>
                 </div>
             </div>
         </section>
     </main>
     <script>
-        function save() {
-            var options_1 = document.getElementsByClassName("select_1");
-            var options_2 = document.getElementsByClassName("select_2");
-            var conf_text = document.getElementsByClassName("conf_text");
-            for (let i = 0; i <= options_1.length; i++) {//сохраняем левый option
-                try {
-                    localStorage.setItem(conf_text[i].getAttribute("value") + "_1_" + String(i), options_1[i].value);
-                }
-                catch (e) {
-                    console.log(e);
-                }
+
+        var options = document.querySelectorAll('.form-select');
+  var selectedOptions = document.querySelectorAll('.selected-options');
+    page = {{PageNumber}}
+    options.forEach(function(select, index) {
+    select.addEventListener('change', function () {
+      var selectedOption = select.options[select.selectedIndex];
+      var selectedOptionText = selectedOption.text;
+
+      if (selectedOption.value !== '') {
+        var selectedOptionElement = document.createElement('div');
+        selectedOptionElement.classList.add('selected-option');
+        selectedOptionElement.innerHTML = '<span>' + selectedOptionText + '</span><button onclick="removeSelectedOption(this, ' + index + ')">x</button>';
+        selectedOptions[index].appendChild(selectedOptionElement);
+      }
+    });
+});
+
+    function removeSelectedOption(button, index) {
+    button.parentElement.remove();
+  options[index].options[options[index].selectedIndex].selected = false;
+}
+
+
+    function save(){
+        picked = document.getElementsByClassName('selected-options')
+        var data = new Map()
+        for (let i =0; i < picked.length; i++){
+             picked_to_save = [];
+            for(let j =0; j < picked[i].childElementCount; j++){
+                picked_to_save.push(picked[i].children.item(j).innerText)
             }
-            for (let i = 0; i <= options_2.length; i++) {//сохраняем правый option
-                try {
-                    localStorage.setItem(conf_text[i].getAttribute("value") + "_2_" + String(i), options_2[i].value);
-                }
-                catch (e) {
-                    console.log(e);
-                }
-            }
+            data.setItem(picked[i].id, picked_to_save)
         }
+
+    }
+      function makeRequest() {
+        save()
+      const httpRequest = new XMLHttpRequest();
+
+      if (!httpRequest) {
+      alert('Giving up :( Cannot create an XMLHTTP instance');
+      return false;
+    }
+    httpRequest.open('POST', '/quest/result');
+    const data = JSON.stringify(localStorage);
+    httpRequest.send(data);
+    window.location.replace('/quest/result');
+  }
     </script>
 </body>
+{% endblock %}
 
 </html>

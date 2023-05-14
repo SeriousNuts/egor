@@ -29,7 +29,7 @@ def load_user(user_id):
 
 @app.route('/quest/>', methods=['GET', 'POST'])
 @app.route('/quest/<int:page>', methods=['GET', 'POST'])
-#@login_required
+# @login_required
 def quest(page):
     print(page, request.form.to_dict())
     threats = []
@@ -54,19 +54,25 @@ def quest(page):
         flask_session.clear()
         flask_session['objects_of_influence'] = []
         req = request.form.to_dict()
-        components = []
+        object_inf_text = object_inf = db.session.query(ObjectOfInfluence).filter(
+            ObjectOfInfluence.object_name.in_(req.values())
+        )
+        object_inf = db.session.query(ObjectOfInfluence.id).filter(
+            ObjectOfInfluence.object_name.in_(req.values())
+        )
+        comp = db.session.query(ComponentObjectOfInfluence.text).filter(
+            ComponentObjectOfInfluence.ObjectOfInfluenceId.in_(object_inf)
+        )
         for k, r in req.items():
-            object_inf = db.session.query(ObjectOfInfluence.id).filter(
-                ObjectOfInfluence.object_name == r
-            )
-            comp = ComponentObjectOfInfluence.query.filter(
-                ComponentObjectOfInfluence.ObjectOfInfluenceId.in_(object_inf)
-            ).all()
-            components.extend(comp)
             flask_session['objects_of_influence'].append(r)
-            if not flask_session.modified:
-                flask_session.modified = True
-        options_list = components
+
+        components = OptionConfs.query.filter(
+            OptionConfs.option_conf_1.in_(comp)
+        ).all()
+        if not flask_session.modified:
+            flask_session.modified = True
+        option_confs = components
+        options = object_inf_text.all()
     if page == 3:
         if not flask_session.modified:
             flask_session.modified = True
@@ -107,6 +113,10 @@ def quest(page):
         options_list = type_of_neg_cons
     if page == 7:
         threats_picked = []
+        threat_level = {'H1': 'низким', 'H2': 'низким', 'H3': 'средним', 'H4': 'высоким'}
+        print('objects_of_influence', flask_session['objects_of_influence'])
+        print('threat_source', flask_session['threat_source'])
+
         for t, o in zip(flask_session['threat_source'], flask_session['objects_of_influence']):
             threat_db = db.session.query(Threat).filter(
                 Threat.ObjectOfInfluence.ilike("%" + o + "%"), Threat.ThreatSource
@@ -121,7 +131,9 @@ def quest(page):
         req = request.form.to_dict()
         for k, v in req.items():
             flask_session['threats'].append(v)
-        options_list = [v.replace("'", "") for (k, v) in req.items()]
+        options = [v.replace("'", "") for (k, v) in req.items()]
+        option_confs = db.session.query(OptionConfs).filter(OptionConfs.question_id == 9).all()
+
     return render_template(template,
                            QuestionForm=question,
                            Options=options_list,
@@ -174,8 +186,9 @@ def editor_option():
 
 
 @app.route('/quest/result', methods=['GET', 'POST'])
-@login_required
 def set_result():
+    req_params = request.get_json('/quest/result', silent=True)  # принимаем результаты в формате json
+    print('ls', req_params)
     report = Report()
     report.init('Отчёт',
                 flask_session['threat_source'],
@@ -197,7 +210,7 @@ def show_result(result_id):
     results = Result.query.filter(
         Result.session_id == result_id
     ).all()
-    #print(result_id)
+    # print(result_id)
     result = {}
     json_object = {}
     for obj in results:

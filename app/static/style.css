@@ -1,5 +1,6 @@
 body {
-    background-color: rgb(234, 255, 234);
+    background-color: #ececec;
+
 }
 
 * {
@@ -28,7 +29,11 @@ main {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: #eaffea;
+    background-color: #ececec;
+}
+h1 {
+  display: inline;
+  border-bottom: 3px solid rgb(255, 71, 71);
 }
 
 .header-nav-list {
@@ -163,3 +168,33 @@ main {
         max-width: 405px;
     }
 }
+.selected-options {
+			display: flex;
+			flex-wrap: wrap;
+			margin-bottom: 10px;
+		}
+		.selected-option {
+			display: flex;
+			align-items: center;
+			background-color: #f2f2f2;
+			border-radius: 5px;
+			padding: 5px 10px;
+			margin-right: 10px;
+			margin-bottom: 10px;
+		}
+		.selected-option span {
+			margin-right: 5px;
+		}
+		.selected-option button {
+			background-color: #e74c3c;
+			color: #fff;
+			border-radius: 50%;
+			border: none;
+			width: 20px;
+			height: 20px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			cursor: pointer;
+			margin-left: 5px;
+		}
