@@ -137,6 +137,14 @@ h1 {
     color: #ff4747;
 }
 
+.checkbox-question-more {
+    display: none;
+}
+
+.checkbox-question:checked+.checkbox-question-more {
+    display: flex;
+}
+
 .container {
     position: relative;
     max-width: 1230px;

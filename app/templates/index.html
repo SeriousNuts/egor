@@ -12,57 +12,102 @@
         crossorigin="anonymous"></script>
     <link rel="stylesheet" href="../static/style.css">
     <title>Опрос</title>
-         {% extends "base.html" %}
-    {% block content %}
 </head>
 
 <body>
+    <header class="header">
+        <div class="container">
+            <div class="header__inner">
+                <h1>Опрос по ГОСТу</h1>
+                <nav class="header-nav">
+                    <ul class="header-nav-list">
+                        <li class="header-nav-list__item">
+                            <a href="#" class="header-nav-list__link">Главная страница</a>
+                        </li>
+                        <li class="header-nav-list__item">
+                            <a href="#" class="header-nav-list__link">Личный кабинет</a>
+                        </li>
+                        <li class="header-nav-list__item">
+                            <a href="#" class="header-nav-list__link">Выйти из аккаунта</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
     <main>
         <section class="quiz">
             <div class="container">
                 <div class="quiz__inner">
                     <h2>{{QuestionForm[PageNumber].text}}? Вопрос номер: {{PageNumber}}</h2>
                     <form action="{{PageNumber + 1}}" method="post">
-                         {% for t in Threats %}
+                        <!-- {% for t in Threats %} -->
                         <div class="card">
                             <div class="card-body">
                                 <span>t.text</span>
-                                 {% endfor %}
-                                {% for q in Options%}
+                                <!-- {% endfor %} -->
                                 <div class="checkboxes" id="checkboxes">
-                                    <div>
-                                        <label for="checkboxes">{{q}}</label>
-                                        <input type="checkbox" name="{{q.id}}" value="{{q.text}}" class="checkbox_input"
-                                            onchange="pickInfoSystem(value)">
+                                    <div style="display: flex; flex-direction: column;">
+                                        <label for="">{{q}}</label>
+                                        <input type="checkbox" name="{{q.id}}" value="{{q.text}}" class="checkbox-question">
+                                        <div class="checkbox-question-more">
+                                            <span>asda</span>
+                                        </div>
+                                        <label for="">{{q}}</label>
+                                        <input type="checkbox" name="{{q.id}}" value="{{q.text}}" class="checkbox-question">
+                                        <div class="checkbox-question-more">
+                                            <span>asda</span>
+                                        </div>
                                     </div>
                                 </div>
-                                {% endfor %}
+                                <div>
+                                </div>
                                 <div class="d-flex">
                                     <a href="{{ url_for('quest', page = PageNumber-1) }}" id="next_page" class="btn btn-danger me-4"> Предыдущий вопрос</a>
-                                     {% if PageNumber != Questionslength - 1%}
+                                    <!-- {% if PageNumber != Questionslength - 1%} -->
                                     <button id="show_resbutton" class="btn btn-danger">Следующий вопрос</button>
-                                    {% endif %}
+                                    <!-- {% endif %} -->
                                 </div>
                             </div>
                         </div>
                     </form>
                     <form action="result">
-                         {% if PageNumber == Questionslength - 1%}
+                        <!-- {% if PageNumber == Questionslength - 1%} -->
                         <button id="result_button" onclick="makeRequest()" class="btn btn-danger mt-4">Показать результаты</button>
-                         {% endif %}
+                        <!-- {% endif %} -->
                     </form>
                 </div>
             </div>
         </section>
     </main>
-     <script>
+    
+    <!-- <script>
+      var boxes = document.getElementsByClassName('box');
 
+function save() {
+  for(let i = 0; i <= boxes.length; i++){
+      try {
+          localStorage.setItem(boxes[i].value, boxes[i].checked);
 
+      }
+      catch (e){
+          console.log(e)
+      }
+  }
+}
+//for loading
+for(let i = 0; i <= boxes; i++){
+  if(localStorage.length > 0){
+    var checked = JSON.parse(localStorage.getItem(boxes[i].value));
+    boxes[i].checked = checked;
+  }
+}
+window.addEventListener('change', save);
 
 function createQuest(quests, options, numb)//создание дополнительных вопросов для выбора модели
 {
-    var boxes = document.getElementsByClassName('checkbox_input');
-            if (boxes[numb].checked) {
+    var boxes = document.getElementsByClassName('box');
+            if (boxes[numb].checked == true) {
                 for (let i = 1; i <= Object.keys(quests).length; i++) {
                     const paragraphElementHead = document.createElement("p");
                     const head = document.createElement("h3");
@@ -79,7 +124,7 @@ function createQuest(quests, options, numb)//создание дополните
                             const label = document.createElement("label");
                             input.type = 'checkbox';
                             input.id = String(numb);
-                            input.className = 'checkbox_input';
+                            input.className = 'box';
                             input.value = options["quest_" + String(i) + '_' + String(j)];
                             input.setAttribute("onchange","pickInfoSystem(value)")
                             label.id = 'label_' + String(numb);
@@ -94,7 +139,7 @@ function createQuest(quests, options, numb)//создание дополните
                     document.getElementById('checkboxes').appendChild(paragraphElementHead);
                 }
             }
-            if (!boxes[numb].checked) {
+            if (boxes[numb].checked == false) {
                 const headsLabel = document.getElementsByClassName('paragraph_label' + String(numb));
                 for (let i = headsLabel.length; i >= 0; i--) {
                     try {
@@ -122,16 +167,35 @@ function pickInfoSystem(value)
                         'quest_1_3': 'Экономическая значимость','quest_1_4': 'Экологическая значимость',
                         'quest_1_5': 'Значимость для обеспечения обороны страны, безопасности государства и правопорядка'}
 
-    const social_quests = {'quest_1_1': 'Социальная значимость'}
+    const social_quests = {'quest_1': 'Социальная значимость'}
 
-    const social_options = {'quest_1_1_1': 'Социальная значимость 1 категория', 'quest_1_1_2': 'Социальная значимость 2 категория',
-                        'quest_1_1_3': 'Социальная значимость 3 категория'}
-
-
+    const social_options = {'quest_1_1': 'Причинение ущерба жизни и здоровью людей (человек)','quest_1_2': ' Прекращение или нарушение функционирования объектов обеспечения жизнедеятельности населения, в \n' +
+            'том числе объектов водоснабжения и канализации, очистки сточных вод, тепло- и электроснабжения, \n' +
+            'гидротехнических сооружений, оцениваемые:) на территории, на которой возможно \n' +
+            'нарушение обеспечения \n' +
+            'жизнедеятельности населения',
+                        'quest_1_3': 'Прекращение или нарушение функционирования объектов транспортной инфраструктуры, оцениваемые:','quest_1_4': 'Прекращение или нарушение функционирования сети связи, оцениваемые:',
+                        'quest_1_5': 'Отсутствие доступа к государственной\n' +
+                            'услуге, оцениваемое в максимальном\n' +
+                            'допустимом времени, в течение которого\n' +
+                            'государственная услуга может быть\n' +
+                            'недоступна для получателей такой услуги\n' +
+                            '(часов) ', 'quest_1_6': 'Прекращение или нарушение функционирования объектов обеспечения жизнедеятельности населения, в \n' +
+            'том числе объектов водоснабжения и канализации, очистки сточных вод, тепло- и электроснабжения, \n' +
+            'гидротехнических сооружений, оцениваемые:по количеству людей, условия \n' +
+            'жизнедеятельности которых могут быть \n' +
+            'нарушены (тыс. человек)'}
     const political_quests =  {'quest_1': 'Политическая значимость'}
-    const politcal_options = {'quest_1': 'Политическая значимость 1 категория', 'quest_2': 'Политическая значимость 2 категория',
-                        'quest_3': 'Политическая значимость 3 категория'}
-
+    const politcal_options = {'quest_1_1': 'Прекращение или нарушение\n' +
+            'функционирования государственного\n' +
+            'органа в части невыполнения\n' +
+            'возложенной на него функции\n' +
+            '(полномочия)\n', 'quest_1_2': 'Нарушение условий международного\n' +
+            'договора РФ, срыв переговоров или\n' +
+            'подписания планируемого к заключению\n' +
+            'международного договора РФ,\n' +
+            'оцениваемые по уровню международного\n' +
+            'договора РФ\n'}
 
 
     const page = {{PageNumber}};
@@ -153,7 +217,6 @@ function pickInfoSystem(value)
                break;
            case 'Политическая значимость':
                createQuest(political_quests, politcal_options, 4)
-               break;
 
        }
     }
@@ -166,12 +229,12 @@ function pickInfoSystem(value)
       alert('Giving up :( Cannot create an XMLHTTP instance');
       return false;
     }
-    httpRequest.open('POST', '/quest/result');
+    httpRequest.open('POST', 'result');
     const data = JSON.stringify(localStorage);
     httpRequest.send(data);
-    window.location.replace('/quest/result');
+    window.location.replace('/quest/show_result/result_id');
   }
-  </script>
+  </script> -->
 </body>
-{% endblock %}
+
 </html>
