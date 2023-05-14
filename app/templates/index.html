@@ -47,11 +47,20 @@
                                 <span>t.text</span>
                                 <!-- {% endfor %} -->
                                 <div class="checkboxes" id="checkboxes">
-                                    <div>
+                                    <div style="display: flex; flex-direction: column;">
                                         <label for="">{{q}}</label>
-                                        <input type="checkbox" name="{{q.id}}" value="{{q.text}}"
-                                            onchange="pickInfoSystem(value)">
+                                        <input type="checkbox" name="{{q.id}}" value="{{q.text}}" class="checkbox-question">
+                                        <div class="checkbox-question-more">
+                                            <span>asda</span>
+                                        </div>
+                                        <label for="">{{q}}</label>
+                                        <input type="checkbox" name="{{q.id}}" value="{{q.text}}" class="checkbox-question">
+                                        <div class="checkbox-question-more">
+                                            <span>asda</span>
+                                        </div>
                                     </div>
+                                </div>
+                                <div>
                                 </div>
                                 <div class="d-flex">
                                     <a href="{{ url_for('quest', page = PageNumber-1) }}" id="next_page" class="btn btn-danger me-4"> Предыдущий вопрос</a>
@@ -71,6 +80,7 @@
             </div>
         </section>
     </main>
+    
     <!-- <script>
       var boxes = document.getElementsByClassName('box');
 
