@@ -68,19 +68,21 @@
         var options = document.querySelectorAll('.form-select');
   var selectedOptions = document.querySelectorAll('.selected-options');
     page = {{PageNumber}}
-    options.forEach(function(select, index) {
-    select.addEventListener('change', function () {
-      var selectedOption = select.options[select.selectedIndex];
-      var selectedOptionText = selectedOption.text;
+        if (page !== 3 && page !== 4) {
+            options.forEach(function (select, index) {
+                select.addEventListener('change', function () {
+                    var selectedOption = select.options[select.selectedIndex];
+                    var selectedOptionText = selectedOption.text;
 
-      if (selectedOption.value !== '') {
-        var selectedOptionElement = document.createElement('div');
-        selectedOptionElement.classList.add('selected-option');
-        selectedOptionElement.innerHTML = '<span>' + selectedOptionText + '</span><button onclick="removeSelectedOption(this, ' + index + ')">x</button>';
-        selectedOptions[index].appendChild(selectedOptionElement);
-      }
-    });
-});
+                    if (selectedOption.value !== '') {
+                        var selectedOptionElement = document.createElement('div');
+                        selectedOptionElement.classList.add('selected-option');
+                        selectedOptionElement.innerHTML = '<span>' + selectedOptionText + '</span><button onclick="removeSelectedOption(this, ' + index + ')">x</button>';
+                        selectedOptions[index].appendChild(selectedOptionElement);
+                    }
+                });
+            });
+        }
 
     function removeSelectedOption(button, index) {
     button.parentElement.remove();

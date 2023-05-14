@@ -1,18 +1,17 @@
 import json
-import random
 from urllib.parse import urlparse, urljoin
 
-import uuid0 as uuid0
-from flask import render_template, request, redirect, url_for
+from flask import render_template, request, redirect, url_for, send_from_directory
 from flask import session as flask_session
-from flask_login import login_required, LoginManager, login_user, current_user, UserMixin, logout_user
+from flask_login import login_required, login_user, current_user, logout_user
 
 from app import app as app, login_manager
 from app import db, models
 from app.forms.LoginForm import LoginForm, RegistrationForm
-from app.makefile import Report, makefile
+from app.makefile import Report, makefile, save_report, readreport
 from app.models import Question, Option, ObjectOfInfluence, OptionConf, Result, User, \
     ComponentObjectOfInfluence, OptionConfs, Threat, TypeOfNegativeConseq, TypeOfRisks
+
 
 
 def is_safe_url(target):
@@ -141,7 +140,8 @@ def quest(page):
                            options_conf_text=options,
                            option_confs=option_confs,
                            Threats=threats,
-                           Questionslength=len(question))
+                           Questionslength=len(question),
+                           )
 
 
 @app.route('/editor/', methods=['GET', 'POST'])
@@ -198,30 +198,10 @@ def set_result():
                 flask_session['threater'],
                 'К3')
 
-    test = makefile(report)
+    filename = makefile(report)
+    save_report(filename)
 
     return render_template('result.html')
-
-
-@app.route('/quest/show_result/', methods=['GET', 'POST'])
-@app.route('/quest/show_result/<int:result_id>', methods=['GET', 'POST'])
-@login_required
-def show_result(result_id):
-    results = Result.query.filter(
-        Result.session_id == result_id
-    ).all()
-    # print(result_id)
-    result = {}
-    json_object = {}
-    for obj in results:
-        if obj is None or obj.resultJSON == '':
-            continue
-        json_object = json.loads(obj.resultJSON)
-        for i in json_object:
-            if json_object[i] == 'false':  # убираем все не отмеченные поля из json вывода
-                continue
-            result.setdefault(i, json_object[i])
-    return render_template('result.html', results=result, result_id=result_id)
 
 
 @app.route('/login', defaults={'errors': None}, methods=['GET', 'POST'])
@@ -261,7 +241,7 @@ def register_form():
             newuser = User()
             newuser.name = form.username.data
             newuser.password = newuser.set_password(form.password.data)
-            newuser.UUID = str(uuid0.generate())
+            newuser.UUID = 'str(uuid0.generate())'
             u: User = models.User(name=newuser.name, password=newuser.password, UUID=newuser.UUID)  # type: ignore
             db.session.add(u)
             db.session.commit()
@@ -279,6 +259,22 @@ def personal_account():
     ).all()
     user = current_user
     return render_template('personal_account.html', user=user, reports=user_reports)
+
+@app.route('/download')
+@app.route('/download/<filename>')
+@login_required
+def download(filename=None):
+    if filename is not None:
+        file = models.Report.query.filter(
+            models.Report.name == filename,
+            models.Report.owner == current_user.name
+        ).first()
+    else:
+        file = models.Report.query.filter(
+            models.Report.owner == current_user.name,
+        ).order_by(models.Report.date.desc()).limit(1).first()
+    download_string = readreport(file.file, file.name)
+    return send_from_directory(download_string, file.name)
 
 
 @app.route("/logout")

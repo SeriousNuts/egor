@@ -41,72 +41,51 @@
                 <div class="quiz__inner">
                     <h2>{{QuestionForm[PageNumber].text}}? Вопрос номер: {{PageNumber}}</h2>
                     <form action="{{PageNumber + 1}}" method="post">
-                        <!-- {% for t in Threats %} -->
+                         {% for t in Threats %}
                         <div class="card">
                             <div class="card-body">
                                 <span>t.text</span>
-                                <!-- {% endfor %} -->
+                                 {% endfor %}
+                                {% for q in Options%}
                                 <div class="checkboxes" id="checkboxes">
                                     <div style="display: flex; flex-direction: column;">
-                                        <label for="">{{q}}</label>
-                                        <input type="checkbox" name="{{q.id}}" value="{{q.text}}" class="checkbox-question">
-                                        <div class="checkbox-question-more">
-                                            <span>asda</span>
+                                        <label >{{q}}</label>
+                                        <input type="checkbox" name="{{q.id}}" value="{{q.text}}"  class="checkbox-question" onchange="pickInfoSystem(value)">
+                                        {% if PageNumber == 0 %}
+                                        <div class="checkbox-question-more" id="{{q.text}}_more" style=" flex-direction: column;">
                                         </div>
-                                        <label for="">{{q}}</label>
-                                        <input type="checkbox" name="{{q.id}}" value="{{q.text}}" class="checkbox-question">
-                                        <div class="checkbox-question-more">
-                                            <span>asda</span>
-                                        </div>
+                                        {%endif%}
                                     </div>
                                 </div>
+                                {% endfor %}
                                 <div>
                                 </div>
                                 <div class="d-flex">
                                     <a href="{{ url_for('quest', page = PageNumber-1) }}" id="next_page" class="btn btn-danger me-4"> Предыдущий вопрос</a>
-                                    <!-- {% if PageNumber != Questionslength - 1%} -->
+                                     {% if PageNumber != Questionslength - 1%}
                                     <button id="show_resbutton" class="btn btn-danger">Следующий вопрос</button>
-                                    <!-- {% endif %} -->
+                                    {% endif %}
                                 </div>
                             </div>
                         </div>
                     </form>
                     <form action="result">
-                        <!-- {% if PageNumber == Questionslength - 1%} -->
+                        {% if PageNumber == Questionslength - 1%}
                         <button id="result_button" onclick="makeRequest()" class="btn btn-danger mt-4">Показать результаты</button>
-                        <!-- {% endif %} -->
+                        {% endif %}
                     </form>
                 </div>
             </div>
         </section>
     </main>
     
-    <!-- <script>
+    <<script>
       var boxes = document.getElementsByClassName('box');
 
-function save() {
-  for(let i = 0; i <= boxes.length; i++){
-      try {
-          localStorage.setItem(boxes[i].value, boxes[i].checked);
 
-      }
-      catch (e){
-          console.log(e)
-      }
-  }
-}
-//for loading
-for(let i = 0; i <= boxes; i++){
-  if(localStorage.length > 0){
-    var checked = JSON.parse(localStorage.getItem(boxes[i].value));
-    boxes[i].checked = checked;
-  }
-}
-window.addEventListener('change', save);
-
-function createQuest(quests, options, numb)//создание дополнительных вопросов для выбора модели
+function createQuest(value,quests, options, numb)//создание дополнительных вопросов для выбора модели
 {
-    var boxes = document.getElementsByClassName('box');
+    var boxes = document.getElementsByClassName('checkbox-question');
             if (boxes[numb].checked == true) {
                 for (let i = 1; i <= Object.keys(quests).length; i++) {
                     const paragraphElementHead = document.createElement("p");
@@ -115,7 +94,7 @@ function createQuest(quests, options, numb)//создание дополните
                     head.className = 'head_label_' + String(numb)
                     head.innerHTML = quests["quest_" + String(i)];
                     paragraphElementHead.appendChild(head);
-                    document.getElementById('checkboxes').appendChild(paragraphElementHead)
+                    document.getElementById(value+'_more').appendChild(paragraphElementHead)
                     for (let j = 1; j <= Object.keys(options).length; j++) {
                         if (options["quest_" + String(i) + "_" + String(j)] != undefined)
                         {
@@ -124,7 +103,7 @@ function createQuest(quests, options, numb)//создание дополните
                             const label = document.createElement("label");
                             input.type = 'checkbox';
                             input.id = String(numb);
-                            input.className = 'box';
+                            input.className = 'checkbox-question';
                             input.value = options["quest_" + String(i) + '_' + String(j)];
                             input.setAttribute("onchange","pickInfoSystem(value)")
                             label.id = 'label_' + String(numb);
@@ -136,8 +115,12 @@ function createQuest(quests, options, numb)//создание дополните
                             paragraphElementHead.appendChild(paragraphElement);
                         }
                     }
-                    document.getElementById('checkboxes').appendChild(paragraphElementHead);
+
+                    more_q = document.getElementById(value+'_more')
+                    more_q.appendChild(paragraphElementHead)
+
                 }
+
             }
             if (boxes[numb].checked == false) {
                 const headsLabel = document.getElementsByClassName('paragraph_label' + String(numb));
@@ -162,29 +145,21 @@ function pickInfoSystem(value)
     const ispdn_options = {'quest_1_1': 'Специальные','quest_1_2': 'Биометрические','quest_1_3': 'Иные','quest_1_4': 'Общедоступные',
                             'quest_2_1': 'Да','quest_2_2': 'Нет',
                             'quest_3_1': '>100 тыс.','quest_3_2': '<100 тыс.','quest_4_1': '1','quest_4_2': '2','quest_4_3': '3'}
-    const kii_quests = {'quest_1': 'Выберите значимость КИИ '}
-    const kii_options = {'quest_1_1': 'Социальная значимость','quest_1_2': 'Политическая значимость',
-                        'quest_1_3': 'Экономическая значимость','quest_1_4': 'Экологическая значимость',
-                        'quest_1_5': 'Значимость для обеспечения обороны страны, безопасности государства и правопорядка'}
+    const kii_quests = {'quest_1': 'Социальная значимость','quest_2': 'Политическая значимость',
+                        'quest_3': 'Экономическая значимость','quest_4': 'Экологическая значимость' ,
+                        'quest_5': 'Значимость для обеспечения обороны страны, безопасности государства и правопорядка'}
+    const kii_options = {'quest_1_1': '1 категория','quest_1_2': '2 категория',
+                        'quest_1_3': '3 категория','quest_2_1': '1 категория',
+                        'quest_2_2': '2 категория','quest_2_3': '3 категория',
+                        'quest_3_1': '1 категория', 'quest_3_2': '2 категория',
+                        'quest_3_3': '3 категория','quest_4_1': '1 категория',
+                        'quest_4_2': '2 категория','quest_4_3': '3 категория',
+                        'quest_5_1': '1 категория',
+                        'quest_5_2': '2 категория','quest_5_3': '3 категория',}
 
     const social_quests = {'quest_1': 'Социальная значимость'}
 
-    const social_options = {'quest_1_1': 'Причинение ущерба жизни и здоровью людей (человек)','quest_1_2': ' Прекращение или нарушение функционирования объектов обеспечения жизнедеятельности населения, в \n' +
-            'том числе объектов водоснабжения и канализации, очистки сточных вод, тепло- и электроснабжения, \n' +
-            'гидротехнических сооружений, оцениваемые:) на территории, на которой возможно \n' +
-            'нарушение обеспечения \n' +
-            'жизнедеятельности населения',
-                        'quest_1_3': 'Прекращение или нарушение функционирования объектов транспортной инфраструктуры, оцениваемые:','quest_1_4': 'Прекращение или нарушение функционирования сети связи, оцениваемые:',
-                        'quest_1_5': 'Отсутствие доступа к государственной\n' +
-                            'услуге, оцениваемое в максимальном\n' +
-                            'допустимом времени, в течение которого\n' +
-                            'государственная услуга может быть\n' +
-                            'недоступна для получателей такой услуги\n' +
-                            '(часов) ', 'quest_1_6': 'Прекращение или нарушение функционирования объектов обеспечения жизнедеятельности населения, в \n' +
-            'том числе объектов водоснабжения и канализации, очистки сточных вод, тепло- и электроснабжения, \n' +
-            'гидротехнических сооружений, оцениваемые:по количеству людей, условия \n' +
-            'жизнедеятельности которых могут быть \n' +
-            'нарушены (тыс. человек)'}
+    const social_options = {'quest_1_1': '1 категория','quest_1_2': '2 категория','quest_1_3': '3 категория'}
     const political_quests =  {'quest_1': 'Политическая значимость'}
     const politcal_options = {'quest_1_1': 'Прекращение или нарушение\n' +
             'функционирования государственного\n' +
@@ -204,24 +179,66 @@ function pickInfoSystem(value)
     {
        switch (value){
            case 'ГИС':
-               createQuest(gis_quests, gis_options, 0);
+               createQuest(value, gis_quests, gis_options, 0);
                break;
            case 'ИСПДн':
-               createQuest(ispdn_quests, ispdn_options, 1);
+               createQuest(value, ispdn_quests, ispdn_options, 1);
                break;
            case 'КИИ':
-               createQuest(kii_quests, kii_options, 2);
+               createQuest(value, kii_quests, kii_options, 2);
                break;
            case 'Социальная значимость':
-               createQuest(social_quests, social_options, 3);
+               createQuest(value, social_quests, social_options, 3);
                break;
            case 'Политическая значимость':
-               createQuest(political_quests, politcal_options, 4)
+               createQuest(value, political_quests, politcal_options, 4)
+               break;
 
        }
     }
 
 }
+function save() {
+    const page = {{PageNumber}};
+    const boxes = document.getElementsByClassName('checkbox-question');
+    if (page === 0){
+        for (let i = 0; i <= boxes.length; i++) {
+            try {
+                localStorage.setItem(boxes[i].value, boxes[i].checked);
+
+            } catch (e) {
+                console.log(e)
+            }
+        }
+
+    }
+  }
+window.addEventListener('change', save);
+  function get_def_class(){
+      ispdn = [
+  ["", "Федеральный", "Региональный", "Объектовый"],
+  ["УЗ 1", "К1", "К1", "К1"],
+  ["УЗ 2", "К1", "К2", "К2"],
+  ["УЗ 3", "К2", "К3", "К3"]
+];
+
+      for (let i = 1; i < dispdn.length; i++) {
+    if (ispdn[i][0] === selectUZ.value) {
+      uzIndex = i;
+      break;
+    }
+  }
+
+  let levelIndex;
+  for (let i = 1; i < ispdn[0].length; i++) {
+    if (ispdn[0][i] === localStorage.getItem()) {
+      levelIndex = i;
+      break;
+    }
+  }
+
+
+  }
   function makeRequest() {
       const httpRequest = new XMLHttpRequest();
 
@@ -234,7 +251,7 @@ function pickInfoSystem(value)
     httpRequest.send(data);
     window.location.replace('/quest/show_result/result_id');
   }
-  </script> -->
+  </script>
 </body>
 
 </html>

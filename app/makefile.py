@@ -1,11 +1,20 @@
+import os
 import random
 import string
+from calendar import calendar
+from datetime import datetime, time
 from pathlib import Path
 
 from docxtpl import DocxTemplate
+from flask_login import current_user
 
-from app import db
+from app import db, models
 from app.models import Threat, TechTactics
+
+#   каталог для загружаемых файлов
+folder_name_in = str(Path(Path.cwd(), 'filestorage'))
+#   каталог для скачиваемых файлов
+folder_name_out = str(Path(Path.cwd(), 'filestorageOUT'))
 
 
 class Report:
@@ -72,6 +81,34 @@ def makefile(report):
 
     template.render(context)
     report_name = ''.join(random.choices(string.ascii_lowercase, k=8)) + '_report.docx'
-    template.save(str(Path(Path.cwd(), 'app','filestorage', report_name)))
+    template.save(str(Path(Path.cwd(), 'app', 'filestorage', report_name)))
+    return report_name
 
-    return 0
+
+def save_report(filename):
+    timestamp = calendar.timegm(time.gmtime())
+    with open(str(Path(folder_name_in, filename)), 'rb') as file:
+        # записываем в формат blob
+        blob_file = file.read()
+    try:
+        f = models.Report(name=filename,
+                          desc='потом будем его формировать',
+                          owner=current_user.name,
+                          date=datetime.fromtimestamp(timestamp),
+                          file=blob_file
+                          )
+        db.session.add(f)
+        db.session.commit()
+        print('файл ' + filename + ' сохранён успешно')
+    except Exception as e:
+        print(e)
+        db.session.rollback()
+    finally:
+        db.session.close()
+        os.remove(str(Path(folder_name_in, filename)))
+
+
+def readreport(data, filename):
+    with open(str(Path(folder_name_out, filename)), 'wb') as file:
+        file.write(data)
+    return folder_name_out

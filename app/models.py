@@ -150,3 +150,10 @@ class Report(db.Model):
     owner = db.Column(db.String(1200), db.ForeignKey(User.name))
     date = db.Column(db.TIMESTAMP)
     file = db.Column(db.BLOB)
+
+
+class UnderQuesstion(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    question_id = db.Column(db.Integer, db.ForeignKey(Question.id))
+    question_text = db.Column(db.String(1200))
+    option_text = db.Column(db.String(1200))
