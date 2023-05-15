@@ -196,10 +196,10 @@ def set_result():
                 flask_session['threats'],
                 flask_session['type_of_risk'],
                 flask_session['threater'],
-                ispdn=req_params['ispdn'],
-                gis=req_params['ГИС_знач'],
-                realiz=req_params['8']
                 )
+    #ispdn = req_params['ispdn'],
+    #gis = req_params['ГИС_знач'],
+    #realiz = req_params['8']
 
     filename = makefile(report)
     save_report(filename)

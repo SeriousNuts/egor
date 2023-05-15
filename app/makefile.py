@@ -85,10 +85,11 @@ def makefile(report):
         'defence_class': report.defence_class,
         'tech_tactik': find_tt(report.threats),
         'short_threats': remove_char_list(report.threats),
-        'gis': report.gis,
-        'ispdn': report.ispdn,
-        'realiz': report.realiz
+
     }
+    #'gis': report.gis,
+    #'ispdn': report.ispdn,
+    #'realiz': report.realiz
 
     template.render(context)
     report_name = ''.join(random.choices(string.ascii_lowercase, k=8)) + '_report.docx'
