@@ -13,7 +13,6 @@ from app.models import Question, Option, ObjectOfInfluence, OptionConf, Result, 
     ComponentObjectOfInfluence, OptionConfs, Threat, TypeOfNegativeConseq, TypeOfRisks
 
 
-
 def is_safe_url(target):
     ref_url = urlparse(request.host_url)
     test_url = urlparse(urljoin(request.host_url, target))
@@ -196,10 +195,14 @@ def set_result():
                 flask_session['threats'],
                 flask_session['type_of_risk'],
                 flask_session['threater'],
+                ispdn='УЗ1',
+                gis='K1',
+                realiz={},
+                defence_class='k1'
                 )
-    #ispdn = req_params['ispdn'],
-    #gis = req_params['ГИС_знач'],
-    #realiz = req_params['8']
+    # ispdn = req_params['ispdn'],
+    # gis = req_params['ГИС_знач'],
+    # realiz = req_params['8']
 
     filename = makefile(report)
     save_report(filename)
@@ -262,6 +265,7 @@ def personal_account():
     ).all()
     user = current_user
     return render_template('personal_account.html', user=user, reports=user_reports)
+
 
 @app.route('/download')
 @app.route('/download/<filename>')
