@@ -196,7 +196,10 @@ def set_result():
                 flask_session['threats'],
                 flask_session['type_of_risk'],
                 flask_session['threater'],
-                'К3')
+                ispdn=req_params['ispdn'],
+                gis=req_params['ГИС_знач'],
+                realiz=req_params['8']
+                )
 
     filename = makefile(report)
     save_report(filename)
@@ -235,12 +238,12 @@ def check_login():
 
 @app.route('/register', methods=['GET', 'POST'])
 def register_form():
-    form = RegistrationForm()
-    if form.validate_on_submit():
+    form = request.form.to_dict()
+    if form is not None:
         try:
             newuser = User()
-            newuser.name = form.username.data
-            newuser.password = newuser.set_password(form.password.data)
+            newuser.name = form['username']
+            newuser.set_password(form['password'])
             newuser.UUID = 'str(uuid0.generate())'
             u: User = models.User(name=newuser.name, password=newuser.password, UUID=newuser.UUID)  # type: ignore
             db.session.add(u)
@@ -266,12 +269,11 @@ def personal_account():
 def download(filename=None):
     if filename is not None:
         file = models.Report.query.filter(
-            models.Report.name == filename,
-            models.Report.owner == current_user.name
+            models.Report.name == filename
         ).first()
     else:
         file = models.Report.query.filter(
-            models.Report.owner == current_user.name,
+            models.Report.owner == 'test',
         ).order_by(models.Report.date.desc()).limit(1).first()
     download_string = readreport(file.file, file.name)
     return send_from_directory(download_string, file.name)

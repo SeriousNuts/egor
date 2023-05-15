@@ -53,6 +53,7 @@
                                         <input type="checkbox" name="{{q.id}}" value="{{q.text}}"  class="checkbox-question" onchange="pickInfoSystem(value)">
                                         {% if PageNumber == 0 %}
                                         <div class="checkbox-question-more" id="{{q.text}}_more" style=" flex-direction: column;">
+                                            <img src="tempsnip.png">
                                         </div>
                                         {%endif%}
                                     </div>
@@ -137,14 +138,14 @@ function createQuest(value,quests, options, numb)//создание дополн
 function pickInfoSystem(value)
 {
     const gis_quests = {'quest_1': 'Выберите масштаб ИС', 'quest_2': 'Выберите уровень значимости информации'}
-    const gis_options = {'quest_1_1': 'Федеральный', 'quest_1_2': 'Региональный', 'quest_1_3': 'Обьектовый',
-                            'quest_2_1': 'УЗН1', 'quest_2_2': 'УЗН2', 'quest_2_3': 'УЗН3'}
-    const ispdn_quests = {'quest_1': 'Выберите категорию ПД', 'quest_2': 'Имеются ли собственные сотрудники в компании/организации',
+    const gis_options = {'quest_1_1': 'Федеральный', 'quest_1_2': 'Региональный', 'quest_1_3': 'Объектовый',
+                            'quest_2_1': 'УЗ высокий', 'quest_2_2': 'УЗ средний', 'quest_2_3': 'УЗ низкий'}
+    const ispdn_quests = {'quest_1': 'Выберите категорию ПД', 'quest_2': 'Выберите категорию субъектов',
                             'quest_3': 'Выберите количество субьектов ПД', 'quest_4': 'Выберите тип актуальных угроз'}
 
     const ispdn_options = {'quest_1_1': 'Специальные','quest_1_2': 'Биометрические','quest_1_3': 'Иные','quest_1_4': 'Общедоступные',
-                            'quest_2_1': 'Да','quest_2_2': 'Нет',
-                            'quest_3_1': '>100 тыс.','quest_3_2': '<100 тыс.','quest_4_1': '1','quest_4_2': '2','quest_4_3': '3'}
+                            'quest_2_1': 'сотрудников оператора','quest_2_2': 'не сотрудников оператора',
+                            'quest_3_1': 'более 100000','quest_3_2': 'менее 100000','quest_3_3': 'любое', 'quest_4_1': '1 тип','quest_4_2': '2 тип','quest_4_3': '3 тип'}
     const kii_quests = {'quest_1': 'Социальная значимость','quest_2': 'Политическая значимость',
                         'quest_3': 'Экономическая значимость','quest_4': 'Экологическая значимость' ,
                         'quest_5': 'Значимость для обеспечения обороны страны, безопасности государства и правопорядка'}
@@ -214,29 +215,125 @@ function save() {
     }
   }
 window.addEventListener('change', save);
-  function get_def_class(){
-      ispdn = [
-  ["", "Федеральный", "Региональный", "Объектовый"],
-  ["УЗ 1", "К1", "К1", "К1"],
-  ["УЗ 2", "К1", "К2", "К2"],
-  ["УЗ 3", "К2", "К3", "К3"]
-];
 
-      for (let i = 1; i < dispdn.length; i++) {
-    if (ispdn[i][0] === selectUZ.value) {
+window.addEventListener("change", get_def_class_gis)
+
+window.addEventListener("change", get_def_class_ispdn)
+
+  function get_def_class_gis(){
+      gis = [
+  ["", "Федеральный", "Региональный", "Объектовый"],
+              ["УЗ высокий", "К1", "К1", "К1"],
+              ["УЗ средний", "К1", "К2", "К2"],
+              ["УЗ низкий", "К2", "К3", "К3"]
+];
+     uzIndex = 0;
+      for (let i = 1; i < gis.length; i++) {
+    if (localStorage.getItem(gis[i][0]) === 'true') {
       uzIndex = i;
       break;
     }
   }
-
-  let levelIndex;
-  for (let i = 1; i < ispdn[0].length; i++) {
-    if (ispdn[0][i] === localStorage.getItem()) {
+   levelIndex = 0;
+  for (let i = 1; i <= gis[0].length; i++) {
+    if (localStorage.getItem(gis[0][i]) === 'true') {
       levelIndex = i;
       break;
     }
   }
+    //console.log(uzIndex)
+      //console.log(levelIndex)
+    localStorage.setItem('ГИС_знач', gis[uzIndex][levelIndex])
 
+  }
+  function get_def_class_ispdn(){
+
+     data = [
+         ["Специальные", "не сотрудников оператора", "более 100000", "УЗ1", "УЗ1", "УЗ2"],
+         ["Специальные","не сотрудников оператора", "менее 100000", "УЗ1", "УЗ2", "УЗ3"],
+         ["Специальные", "сотрудников оператора", "любое", "УЗ1", "УЗ2", "УЗ3"],
+         ["Биометрические", "не сотрудников оператора", "более 100000", "УЗ1", "УЗ2", "УЗ3"],
+         ["Биометрические","не сотрудников оператора", "менее 100000", "УЗ1", "УЗ2", "УЗ3"],
+         ["Биометрические", "сотрудников оператора", "любое", "УЗ1", "УЗ2", "УЗ3"],
+         ["Иные", "не сотрудников оператора", "более 100000", "УЗ1", "УЗ2", "УЗ3"],
+         ["Иные","не сотрудников оператора", "менее 100000", "УЗ1", "УЗ3", "УЗ4"],
+         ["Иные","сотрудников оператора","любое","УЗ1","УЗ3","УЗ4"],
+         ["Общедоступные","не сотрудников оператора","более 100000","УЗ2","УЗ2","УЗ4"],
+         ["Общедоступные","не сотрудников оператора","менее 100000","УЗ2","УЗ3","УЗ4"],
+         ["Общедоступные","сотрудников оператора","любое","УЗ2","УЗ3","УЗ4"] ];
+
+     data_uz = [
+  [ '1 тип', '2 тип', '3 тип' ],
+  [ 'УЗ1', 'УЗ1', 'УЗ2' ],
+  [ 'УЗ1', 'УЗ2', 'УЗ3' ],
+  [ 'УЗ1', 'УЗ2', 'УЗ3' ],
+  [ 'УЗ1', 'УЗ2', 'УЗ3' ],
+  [ 'УЗ1', 'УЗ2', 'УЗ3' ],
+  [ 'УЗ1', 'УЗ2', 'УЗ3' ],
+  [ 'УЗ1', 'УЗ2', 'УЗ3' ],
+  [ 'УЗ1', 'УЗ3', 'УЗ4' ],
+  [ 'УЗ1', 'УЗ3', 'УЗ4' ],
+  [ 'УЗ2', 'УЗ2', 'УЗ4' ],
+  [ 'УЗ2', 'УЗ3', 'УЗ4' ],
+  [ 'УЗ2', 'УЗ3', 'УЗ4' ]
+]
+
+     category = "";
+      for (let i = 0; i <= data.length; i++) {
+    if (localStorage.getItem(data[i][0]) === 'true') {
+      category = data[i][0];
+      break;
+    }
+  }
+   employs = "";
+      for (let i = 0; i <= data.length; i++) {
+    if (localStorage.getItem(data[i][1]) === 'true') {
+      employs = data[i][1];
+      break;
+    }
+  }
+       number = "";
+      for (let i = 0; i <= data.length; i++) {
+    if (localStorage.getItem(data[i][2]) === 'true') {
+      number = data[i][2];
+      break;
+    }
+  }
+      type = ""
+      for (let i = 0; i <= data_uz[0].length; i++) {
+    if (localStorage.getItem(data_uz[0][i]) === 'true') {
+      type = data_uz[0][i];
+      console.log(type)
+      break;
+    }
+  }
+
+let user_input = [category,employs,number];
+filtered_data = data.filter(function(item) {
+    return item[0] === user_input[0] && item[1] === user_input[1] && item[2] === user_input[2];
+});
+elements = ''
+if (type === '1 тип'){
+    elements = filtered_data[0][3]
+}
+if (type === '2 тип'){
+    elements = filtered_data[0][4]
+}
+if (type === '3 тип'){
+    elements = filtered_data[0][5]
+}
+localStorage.setItem('ispdn', elements)
+//console.log(elements.slice(-3))
+
+//const filteredArr = data_uz.filter((el) => elements.every((element) => el.includes(element)));
+//const result = filteredArr.map((el) => el[data_uz[0].indexOf(type)]);
+console.log(filtered_data);
+console.log(elements);
+
+//console.log(result)
+
+
+//console.log(filtered_data);
 
   }
   function makeRequest() {

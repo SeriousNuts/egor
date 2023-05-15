@@ -1,8 +1,9 @@
+import calendar
 import os
 import random
 import string
-from calendar import calendar
-from datetime import datetime, time
+import time
+from datetime import datetime
 from pathlib import Path
 
 from docxtpl import DocxTemplate
@@ -12,9 +13,9 @@ from app import db, models
 from app.models import Threat, TechTactics
 
 #   каталог для загружаемых файлов
-folder_name_in = str(Path(Path.cwd(), 'filestorage'))
+folder_name_in = str(Path(Path.cwd(), 'app', 'filestorage'))
 #   каталог для скачиваемых файлов
-folder_name_out = str(Path(Path.cwd(), 'filestorageOUT'))
+folder_name_out = str(Path(Path.cwd(), 'app', 'filestorageOUT'))
 
 
 class Report:
@@ -25,8 +26,12 @@ class Report:
     risks = []
     defence_class = ''
     threaters = []
+    gis = ''
+    ispdn = ''
+    realiz = {}
 
-    def init(self, title, threat_sources, objects_of_influence, threats, risks, threaters, defence_class):
+    def init(self, title, threat_sources, objects_of_influence, threats, risks, threaters,
+             defence_class, gis, ispdn, realiz):
         self.title = title
         self.threat_sources = threat_sources
         self.objects_of_influence = objects_of_influence
@@ -34,6 +39,9 @@ class Report:
         self.risks = risks
         self.threaters = threaters
         self.defence_class = defence_class
+        self.gis = gis
+        self.ispdn = ispdn
+        self.realiz = realiz
 
 
 # из полного текста угроз получаем её имя
@@ -76,7 +84,10 @@ def makefile(report):
         'threaters': report.threaters,
         'defence_class': report.defence_class,
         'tech_tactik': find_tt(report.threats),
-        'short_threats': remove_char_list(report.threats)
+        'short_threats': remove_char_list(report.threats),
+        'gis': report.gis,
+        'ispdn': report.ispdn,
+        'realiz': report.realiz
     }
 
     template.render(context)
@@ -93,7 +104,7 @@ def save_report(filename):
     try:
         f = models.Report(name=filename,
                           desc='потом будем его формировать',
-                          owner=current_user.name,
+                          owner='test',
                           date=datetime.fromtimestamp(timestamp),
                           file=blob_file
                           )

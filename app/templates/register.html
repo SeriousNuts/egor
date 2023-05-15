@@ -38,12 +38,11 @@
                 <div class="register__inner">
                     <h1 class="mb-4">Регистрация</h1>
                     <form action="/register" method="post">
-                        <!-- {{ form.hidden_tag() }} -->
-                        <label for="">Имя пользователя</label>
-                        <input type="text" class="form-control">
-                        <label for="" class="mt-4">Пароль</label>
-                        <input type="password" class="form-control">
-                        <label for="" class="mt-4">Подтвердите пароль</label>
+                        <label>Имя пользователя</label>
+                        <input type="text" name="username" class="form-control">
+                        <label class="mt-4">Пароль</label>
+                        <input type="password" name="password" class="form-control">
+                        <label class="mt-4">Подтвердите пароль</label>
                         <input type="password" class="form-control">
                         <button class="btn btn-danger mt-4">Зарегистрироваться</button>
                         <a href="/login" class="btn btn-danger mt-4">Уже есть аккаунт? Войти</a>

@@ -89,8 +89,9 @@
   options[index].options[options[index].selectedIndex].selected = false;
 }
 
-
+window.addEventListener('change', save)
     function save(){
+
         picked = document.getElementsByClassName('selected-options')
         var data = new Map()
         for (let i =0; i < picked.length; i++){
@@ -98,22 +99,24 @@
             for(let j =0; j < picked[i].childElementCount; j++){
                 picked_to_save.push(picked[i].children.item(j).innerText)
             }
-            data.setItem(picked[i].id, picked_to_save)
+            data.set(picked[i].id, picked_to_save)
         }
-
+        const myObj = Object.fromEntries(data);
+        localStorage.setItem(page, JSON.stringify(myObj))
     }
       function makeRequest() {
         save()
-      const httpRequest = new XMLHttpRequest();
-
-      if (!httpRequest) {
-      alert('Giving up :( Cannot create an XMLHTTP instance');
-      return false;
-    }
-    httpRequest.open('POST', '/quest/result');
-    const data = JSON.stringify(localStorage);
-    httpRequest.send(data);
-    window.location.replace('/quest/result');
+      fetch('/quest/result', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    data: localStorage
+  })
+})
+.then(response => response.json())
+.then(data => console.log(data));
   }
     </script>
 </body>

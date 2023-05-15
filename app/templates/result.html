@@ -37,14 +37,13 @@
     </header>
     <main>
         <section class="result">
-            <div class="container">
-                <div class="result__inner">
-                    <h2>Результат</h2>
-                    <!-- {% for q in results %} -->
-                    <span>{{q}}</span>
-                    <!-- {% endfor %} -->
+            <section class="report">
+            <div class="card">
+                <div class="card-body flex-column d-flex">
+                    <a href="{{ url_for('download') }}" class="btn btn-success mt-3 col-3 mx-auto">Скачать отчет</a>
                 </div>
             </div>
+        </section>
         </section>
     </main>
 </body>

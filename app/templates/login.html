@@ -38,7 +38,6 @@
                 <div class="login__inner">
                     <h1>Вход</h1>
                     <form action="/check_login" method="post" style="width: max-content;">
-                        <!-- {{ form.hidden_tag() }} -->
                         <label for="" class="mb-2">Имя пользователя</label>
                         <input type="text" name="username" class="form-control mb-4">
                         <label for="" class="mb-2">Пароль</label>
@@ -57,21 +56,7 @@
         </section>
     </main>
     
-    <!-- <form action="/check_login" method="post">
-        {{ form.hidden_tag() }}
-        <p>
-            {{ form.username.label }}<br>
-            {{ form.username(size=32) }}
-        </p>
-        <p>
-            {{ form.password.label }}<br>
-            {{ form.password(size=32) }}
-        </p>
-        <p>{{ form.remember_me() }} {{ form.remember_me.label }}</p>
-        <p>{{ error }}</p>
-        <p>{{ form.submit() }}</p>
-    </form>
-    <p><a href="">Зарегистрироваться</a></p> -->
+
 </body>
 
 </html>
