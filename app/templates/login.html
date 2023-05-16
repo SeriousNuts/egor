@@ -15,23 +15,8 @@
 </head>
 
 <body>
-    <header class="header">
-        <div class="container">
-            <div class="header__inner">
-                <h1>Опрос по ГОСТу</h1>
-                <nav class="header-nav">
-                    <ul class="header-nav-list">
-                        <li class="header-nav-list__item">
-                            <a href="#" class="header-nav-list__link">Главная страница</a>
-                        </li>
-                        <li class="header-nav-list__item">
-                            <a href="#" class="header-nav-list__link">Личный кабинет</a>
-                        </li>
-                    </ul>
-                </nav>
-            </div>
-        </div>
-    </header>
+       {% extends "base.html" %}
+    {% block content %}
     <main>
         <section class="login">
             <div class="container">
@@ -58,5 +43,5 @@
     
 
 </body>
-
+{% endblock %}
 </html>

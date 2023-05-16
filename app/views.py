@@ -29,7 +29,7 @@ def load_user(user_id):
 @app.route('/quest/<int:page>', methods=['GET', 'POST'])
 # @login_required
 def quest(page):
-    print(page, request.form.to_dict())
+    print(page, request.form)
     threats = []
     question = Question.query.order_by(Question.question_number.asc()).all()
     options_list = Option.query.filter(
@@ -52,7 +52,7 @@ def quest(page):
         flask_session.clear()
         flask_session['objects_of_influence'] = []
         req = request.form.to_dict()
-        object_inf_text = object_inf = db.session.query(ObjectOfInfluence).filter(
+        object_inf_text = db.session.query(ObjectOfInfluence).filter(
             ObjectOfInfluence.object_name.in_(req.values())
         )
         object_inf = db.session.query(ObjectOfInfluence.id).filter(
@@ -69,8 +69,8 @@ def quest(page):
         ).all()
         if not flask_session.modified:
             flask_session.modified = True
-        option_confs = components
-        options = object_inf_text.all()
+        #option_confs = components
+        #options = object_inf_text.all()
     if page == 3:
         if not flask_session.modified:
             flask_session.modified = True
@@ -114,10 +114,14 @@ def quest(page):
         threat_level = {'H1': 'низким', 'H2': 'низким', 'H3': 'средним', 'H4': 'высоким'}
         print('objects_of_influence', flask_session['objects_of_influence'])
         print('threat_source', flask_session['threat_source'])
-
-        for t, o in zip(flask_session['threat_source'], flask_session['objects_of_influence']):
+        object_inf = db.session.query(ObjectOfInfluence.id).filter(
+            ObjectOfInfluence.object_name.in_(flask_session['objects_of_influence']))
+        component_obj = db.session.query(ComponentObjectOfInfluence).filter(
+            ComponentObjectOfInfluence.ObjectOfInfluenceId.in_(object_inf)
+        ).all()
+        for t, o in zip(flask_session['threat_source'], component_obj):
             threat_db = db.session.query(Threat).filter(
-                Threat.ObjectOfInfluence.ilike("%" + o + "%"), Threat.ThreatSource
+                Threat.ObjectOfInfluence.ilike("%" + o.text + "%"), Threat.ThreatSource
                 .ilike("%" + t + "%")
             ).all()
             if len(threat_db) > 0:
@@ -273,7 +277,7 @@ def personal_account():
 
 @app.route('/download')
 @app.route('/download/<filename>')
-@login_required
+#@login_required
 def download(filename=None):
     if filename is not None:
         file = models.Report.query.filter(
