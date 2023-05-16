@@ -108,7 +108,7 @@ window.addEventListener('change', save)
     }
       function makeRequest() {
         save()
-      fetch('\\quest\\{PageNumber + 1}', {
+      fetch('/quest/result', {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json'
@@ -120,20 +120,6 @@ window.addEventListener('change', save)
 .then(response => response.json())
 .then(data => console.log(data));
   }
-    function send_components(){
-            components = localStorage.getItem('2')
-           fetch('/quest/result', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json'
-  },
-  body: JSON.stringify({
-    data: components
-  })
-})
-.then(response => response.json())
-.then(data => console.log(data));
-    }
     </script>
 </body>
 {% endblock %}

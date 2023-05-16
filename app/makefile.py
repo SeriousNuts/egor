@@ -46,6 +46,13 @@ class Report:
         self.components = components
 
 
+class ThreatCategory:
+    component = ''
+    threater = ''
+    threat = ''
+    category = ''
+
+
 # из полного текста угроз получаем её имя
 def remove_chars(s):
     return s.split(' Угроза', 1)[0]
@@ -55,8 +62,11 @@ def remove_char_list(list_t):
     threats = []
     for t in list_t:
         threats.append(remove_chars(t))
-
     return threats
+
+
+def threat_category():
+    pass
 
 
 def find_tt(threats):
@@ -74,16 +84,36 @@ def find_tt(threats):
     return threats_tt
 
 
+def merge_dicts(lst):
+    res = {}
+    for i in range(len(lst)):
+        for k, v in lst[i].items():
+            res[k] = res.get(k, '') + " : " + v
+    return res
+
+
+def findthreats(threats):
+    threats_to_temp = []
+    for t in threats:
+        threat_query = db.session.query(Threat).filter(
+            Threat.ubi_name == remove_chars(t)
+        ).first()
+        threats_to_temp.append(threat_query)
+    return threats_to_temp
+
+
 def makefile(report):
     template = DocxTemplate(str(Path(Path.cwd(), 'template.docx')))
-
+    threat_category = ThreatCategory()
+    threat_category.category = report.objects_of_influence
+    threat_category.threat = report.threats
     context = {
         'threat_sources': report.threat_sources,
         'object_of_influence': report.objects_of_influence,
-        'threats': report.threats,
+        'threats': findthreats(report.threats),
         'risks': report.risks,
         'title': report.title,
-        'threaters': report.threaters,
+        'threaters': merge_dicts(report.threaters),
         'defence_class': report.defence_class,
         'tech_tactik': find_tt(report.threats),
         'short_threats': remove_char_list(report.threats),
@@ -92,7 +122,6 @@ def makefile(report):
         'ispdn': report.ispdn,
         'realiz': report.realiz
     }
-
 
     template.render(context)
     report_name = ''.join(random.choices(string.ascii_lowercase, k=8)) + '_report.docx'

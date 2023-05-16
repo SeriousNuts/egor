@@ -29,7 +29,7 @@ def load_user(user_id):
 @app.route('/quest/<int:page>', methods=['GET', 'POST'])
 # @login_required
 def quest(page):
-    print(page, request.form)
+    print(page, request.form.to_dict())
     threats = []
     question = Question.query.order_by(Question.question_number.asc()).all()
     options_list = Option.query.filter(
@@ -69,8 +69,9 @@ def quest(page):
         ).all()
         if not flask_session.modified:
             flask_session.modified = True
-        #option_confs = components
-        #options = object_inf_text.all()
+        # option_confs = components
+        # options = object_inf_text.all()
+        template = "in_work.html"
     if page == 3:
         if not flask_session.modified:
             flask_session.modified = True
@@ -193,18 +194,23 @@ def set_result():
     req_params = request.get_json('/quest/result', silent=True)  # принимаем результаты в формате json
     if req_params is not None:
         print('ls', req_params)
-        print(type(req_params))
+        #print(type(req_params))
         print(req_params.get('data', '').get('4', ''))
+        print('gis', req_params.get('data', '').get('ГИС_знач', ''))
+        print('ispdn', req_params.get('data', '').get('ispdn', ''))
+        print('realiz', req_params.get('data', '').get('8', ''))
+        print(type(req_params.get('data', '').get('8', '')))
+        print(flask_session['threater'])
         report = Report()
         report.init('Отчёт',
                     flask_session['threat_source'],
                     flask_session['objects_of_influence'],
-                    flask_session['threats'],
-                    flask_session['type_of_risk'],
-                    flask_session['threater'],
+                    threats=flask_session['threats'],
+                    risks=flask_session['type_of_risk'],
+                    threaters=flask_session['threater'],
                     ispdn=req_params.get('data', '').get('ispdn', ''),
                     gis=req_params.get('data', '').get('ГИС_знач', ''),
-                    realiz=req_params.get('data', '').get('8', ''),
+                    realiz=json.loads(req_params.get('data', '').get('8', '')),
                     defence_class='',
                     components=req_params.get('data', '').get('4', ''),
                     )
@@ -234,6 +240,7 @@ def main_page():
 
 @app.route('/check_login', methods=['GET', 'POST'])
 def check_login():
+    flask_session.clear()
     if request.method == 'POST':
         name = request.form.get('username')
         password = request.form.get('password')
@@ -277,7 +284,7 @@ def personal_account():
 
 @app.route('/download')
 @app.route('/download/<filename>')
-#@login_required
+# @login_required
 def download(filename=None):
     if filename is not None:
         file = models.Report.query.filter(
