@@ -29,7 +29,7 @@ def load_user(user_id):
 @app.route('/quest/<int:page>', methods=['GET', 'POST'])
 # @login_required
 def quest(page):
-    print(page, request.form.to_dict())
+    print(page, request.form)
     threats = []
     question = Question.query.order_by(Question.question_number.asc()).all()
     options_list = Option.query.filter(
@@ -52,7 +52,7 @@ def quest(page):
         flask_session.clear()
         flask_session['objects_of_influence'] = []
         req = request.form.to_dict()
-        object_inf_text = object_inf = db.session.query(ObjectOfInfluence).filter(
+        object_inf_text = db.session.query(ObjectOfInfluence).filter(
             ObjectOfInfluence.object_name.in_(req.values())
         )
         object_inf = db.session.query(ObjectOfInfluence.id).filter(
@@ -69,8 +69,8 @@ def quest(page):
         ).all()
         if not flask_session.modified:
             flask_session.modified = True
-        option_confs = components
-        options = object_inf_text.all()
+        #option_confs = components
+        #options = object_inf_text.all()
     if page == 3:
         if not flask_session.modified:
             flask_session.modified = True
@@ -114,10 +114,14 @@ def quest(page):
         threat_level = {'H1': 'низким', 'H2': 'низким', 'H3': 'средним', 'H4': 'высоким'}
         print('objects_of_influence', flask_session['objects_of_influence'])
         print('threat_source', flask_session['threat_source'])
-
-        for t, o in zip(flask_session['threat_source'], flask_session['objects_of_influence']):
+        object_inf = db.session.query(ObjectOfInfluence.id).filter(
+            ObjectOfInfluence.object_name.in_(flask_session['objects_of_influence']))
+        component_obj = db.session.query(ComponentObjectOfInfluence).filter(
+            ComponentObjectOfInfluence.ObjectOfInfluenceId.in_(object_inf)
+        ).all()
+        for t, o in zip(flask_session['threat_source'], component_obj):
             threat_db = db.session.query(Threat).filter(
-                Threat.ObjectOfInfluence.ilike("%" + o + "%"), Threat.ThreatSource
+                Threat.ObjectOfInfluence.ilike("%" + o.text + "%"), Threat.ThreatSource
                 .ilike("%" + t + "%")
             ).all()
             if len(threat_db) > 0:
@@ -187,25 +191,29 @@ def editor_option():
 @app.route('/quest/result', methods=['GET', 'POST'])
 def set_result():
     req_params = request.get_json('/quest/result', silent=True)  # принимаем результаты в формате json
-    print('ls', req_params)
-    report = Report()
-    report.init('Отчёт',
-                flask_session['threat_source'],
-                flask_session['objects_of_influence'],
-                flask_session['threats'],
-                flask_session['type_of_risk'],
-                flask_session['threater'],
-                ispdn='УЗ1',
-                gis='K1',
-                realiz={},
-                defence_class='k1'
-                )
-    # ispdn = req_params['ispdn'],
-    # gis = req_params['ГИС_знач'],
-    # realiz = req_params['8']
+    if req_params is not None:
+        print('ls', req_params)
+        print(type(req_params))
+        print(req_params.get('data', '').get('4', ''))
+        report = Report()
+        report.init('Отчёт',
+                    flask_session['threat_source'],
+                    flask_session['objects_of_influence'],
+                    flask_session['threats'],
+                    flask_session['type_of_risk'],
+                    flask_session['threater'],
+                    ispdn=req_params.get('data', '').get('ispdn', ''),
+                    gis=req_params.get('data', '').get('ГИС_знач', ''),
+                    realiz=req_params.get('data', '').get('8', ''),
+                    defence_class='',
+                    components=req_params.get('data', '').get('4', ''),
+                    )
+        # ispdn = req_params['ispdn'],
+        # gis = req_params['ГИС_знач'],
+        # realiz = req_params['8']
 
-    filename = makefile(report)
-    save_report(filename)
+        filename = makefile(report)
+        save_report(filename)
 
     return render_template('result.html')
 
@@ -269,7 +277,7 @@ def personal_account():
 
 @app.route('/download')
 @app.route('/download/<filename>')
-@login_required
+#@login_required
 def download(filename=None):
     if filename is not None:
         file = models.Report.query.filter(

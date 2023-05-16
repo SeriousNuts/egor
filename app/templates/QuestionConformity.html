@@ -46,12 +46,14 @@
                             {%endif%}
                         </div>
                          {% endfor %}
+                        {% if PageNumber == 2 %}
+                        <h3>Данный вопрос в разработке(на данном этапе выбираются все компоненты объектов воздействия)</h3>
+                        {% endif %}
                         <div class="btn-group mt-4">
                             <a href="{{ url_for('quest', page = PageNumber-1) }}" class="btn btn-danger">Предыдущий вопрос</a>
                             {% if PageNumber != Questionslength - 1%}
                                     <button id="show_resbutton" class="btn btn-danger" onclick="save()">Следующий вопрос</button>
                                     {% endif %}
-
                         </div>
                     </form>
                            <form action="result">
@@ -106,7 +108,7 @@ window.addEventListener('change', save)
     }
       function makeRequest() {
         save()
-      fetch('/quest/result', {
+      fetch('\\quest\\{PageNumber + 1}', {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json'
@@ -118,6 +120,20 @@ window.addEventListener('change', save)
 .then(response => response.json())
 .then(data => console.log(data));
   }
+    function send_components(){
+            components = localStorage.getItem('2')
+           fetch('/quest/result', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    data: components
+  })
+})
+.then(response => response.json())
+.then(data => console.log(data));
+    }
     </script>
 </body>
 {% endblock %}
