@@ -29,9 +29,10 @@ class Report:
     gis = ''
     ispdn = ''
     realiz = {}
+    components = {}
 
     def init(self, title, threat_sources, objects_of_influence, threats, risks, threaters,
-             defence_class, gis, ispdn, realiz):
+             defence_class, gis, ispdn, realiz, components):
         self.title = title
         self.threat_sources = threat_sources
         self.objects_of_influence = objects_of_influence
@@ -42,6 +43,7 @@ class Report:
         self.gis = gis
         self.ispdn = ispdn
         self.realiz = realiz
+        self.components = components
 
 
 # из полного текста угроз получаем её имя
@@ -85,11 +87,12 @@ def makefile(report):
         'defence_class': report.defence_class,
         'tech_tactik': find_tt(report.threats),
         'short_threats': remove_char_list(report.threats),
-
+        'components': report.components,
+        'gis': report.gis,
+        'ispdn': report.ispdn,
+        'realiz': report.realiz
     }
-    #'gis': report.gis,
-    #'ispdn': report.ispdn,
-    #'realiz': report.realiz
+
 
     template.render(context)
     report_name = ''.join(random.choices(string.ascii_lowercase, k=8)) + '_report.docx'

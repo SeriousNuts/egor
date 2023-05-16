@@ -187,25 +187,29 @@ def editor_option():
 @app.route('/quest/result', methods=['GET', 'POST'])
 def set_result():
     req_params = request.get_json('/quest/result', silent=True)  # принимаем результаты в формате json
-    print('ls', req_params)
-    report = Report()
-    report.init('Отчёт',
-                flask_session['threat_source'],
-                flask_session['objects_of_influence'],
-                flask_session['threats'],
-                flask_session['type_of_risk'],
-                flask_session['threater'],
-                ispdn='УЗ1',
-                gis='K1',
-                realiz={},
-                defence_class='k1'
-                )
-    # ispdn = req_params['ispdn'],
-    # gis = req_params['ГИС_знач'],
-    # realiz = req_params['8']
+    if req_params is not None:
+        print('ls', req_params)
+        print(type(req_params))
+        print(req_params.get('data', '').get('4', ''))
+        report = Report()
+        report.init('Отчёт',
+                    flask_session['threat_source'],
+                    flask_session['objects_of_influence'],
+                    flask_session['threats'],
+                    flask_session['type_of_risk'],
+                    flask_session['threater'],
+                    ispdn=req_params.get('data', '').get('ispdn', ''),
+                    gis=req_params.get('data', '').get('ГИС_знач', ''),
+                    realiz=req_params.get('data', '').get('8', ''),
+                    defence_class='',
+                    components=req_params.get('data', '').get('4', ''),
+                    )
+        # ispdn = req_params['ispdn'],
+        # gis = req_params['ГИС_знач'],
+        # realiz = req_params['8']
 
-    filename = makefile(report)
-    save_report(filename)
+        filename = makefile(report)
+        save_report(filename)
 
     return render_template('result.html')
 
