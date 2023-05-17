@@ -80,7 +80,7 @@ def quest(page):
         flask_session['threater'] = []
         req = request.form.to_dict()
         for k, r in req.items():
-            flask_session['threater'].append(k + ' : ' + r)
+            flask_session['threater'].append({k: r})
         #   условие для 4 вопроса выводит только нужные объекты воздействия
         object_inf = db.session.query(OptionConf).filter(
             OptionConf.text.in_(flask_session['objects_of_influence']), OptionConf.question_id == 5)

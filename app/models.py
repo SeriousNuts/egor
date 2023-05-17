@@ -30,6 +30,7 @@ class ThreatSource(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     question = db.Column(db.Integer, db.ForeignKey(Question.id))
     object_name = db.Column(db.String(1200), index=True, unique=True)
+    category = db.Column(db.String(1200))
 
 
 class Threat(db.Model):
@@ -151,9 +152,3 @@ class Report(db.Model):
     date = db.Column(db.TIMESTAMP)
     file = db.Column(db.BLOB)
 
-
-class UnderQuesstion(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    question_id = db.Column(db.Integer, db.ForeignKey(Question.id))
-    question_text = db.Column(db.String(1200))
-    option_text = db.Column(db.String(1200))

@@ -15,26 +15,8 @@
 </head>
 
 <body>
-    <header class="header">
-        <div class="container">
-            <div class="header__inner">
-                <h1>Опрос по ГОСТу</h1>
-                <nav class="header-nav">
-                    <ul class="header-nav-list">
-                        <li class="header-nav-list__item">
-                            <a href="/main" class="header-nav-list__link">Главная страница</a>
-                        </li>
-                        <li class="header-nav-list__item">
-                            <a href="/personal_account" class="header-nav-list__link">Личный кабинет</a>
-                        </li>
-                        <li class="header-nav-list__item">
-                            <a href="/logout" class="header-nav-list__link">Выйти из аккаунта</a>
-                        </li>
-                    </ul>
-                </nav>
-            </div>
-        </div>
-    </header>
+     {% extends "base.html" %}
+    {% block content %}
     <main>
         <section class="result">
             <section class="report">
@@ -47,5 +29,5 @@
         </section>
     </main>
 </body>
-
+{% endblock %}
 </html>

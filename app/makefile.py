@@ -1,16 +1,18 @@
 import calendar
+import json
 import os
 import random
 import string
 import time
 from datetime import datetime
 from pathlib import Path
+from typing import Any
 
 from docxtpl import DocxTemplate
 from flask_login import current_user
 
 from app import db, models
-from app.models import Threat, TechTactics
+from app.models import Threat, TechTactics, ThreatSource
 
 #   каталог для загружаемых файлов
 folder_name_in = str(Path(Path.cwd(), 'app', 'filestorage'))
@@ -46,11 +48,17 @@ class Report:
         self.components = components
 
 
-class ThreatCategory:
-    component = ''
+class Threater:
     threater = ''
-    threat = ''
+    threat_level = {}
+    threat_point = {}
     category = ''
+
+    def init(self, threater, threat_level, threat_point, category):
+        self.threater = threater
+        self.threat_level = threat_level
+        self.threat_point = threat_point
+        self.category = category
 
 
 # из полного текста угроз получаем её имя
@@ -65,10 +73,7 @@ def remove_char_list(list_t):
     return threats
 
 
-def threat_category():
-    pass
-
-
+# находим техники тактики
 def find_tt(threats):
     threats_tt = {}
     for t in threats:
@@ -92,6 +97,23 @@ def merge_dicts(lst):
     return res
 
 
+# получаем угрозы и их цели
+def threaters(lst):
+    lst = merge_dicts(lst)
+    ph = "_уровень'"
+    test = []
+    for k, v in lst.items():
+        if '-' not in v:
+            if ph not in k:
+                threat = Threater()
+                category = db.session.query(ThreatSource.category).filter(
+                    ThreatSource.object_name == k
+                ).first()
+                threat.init(k, lst[k + ph], lst[k], str(category))
+                test.append(threat)
+    return test
+
+
 def findthreats(threats):
     threats_to_temp = []
     for t in threats:
@@ -104,16 +126,13 @@ def findthreats(threats):
 
 def makefile(report):
     template = DocxTemplate(str(Path(Path.cwd(), 'template.docx')))
-    threat_category = ThreatCategory()
-    threat_category.category = report.objects_of_influence
-    threat_category.threat = report.threats
     context = {
         'threat_sources': report.threat_sources,
         'object_of_influence': report.objects_of_influence,
         'threats': findthreats(report.threats),
         'risks': report.risks,
         'title': report.title,
-        'threaters': merge_dicts(report.threaters),
+        'threaters': threaters(report.threaters),
         'defence_class': report.defence_class,
         'tech_tactik': find_tt(report.threats),
         'short_threats': remove_char_list(report.threats),
