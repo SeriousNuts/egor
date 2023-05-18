@@ -93,10 +93,17 @@ def quest(page):
     if page == 5:
         req = request.form.to_dict()
         flask_session['threat_source'] = []
+        flask_session['threat_source_level'] = []
+        ph = "_уровень"
         for k, r in req.items():
-            flask_session['threat_source'].append(r)
+            if ph not in k:
+                flask_session['threat_source'].append(r)
+            else:
+                flask_session['threat_source_level'].append(r)
+
             if not flask_session.modified:
                 flask_session.modified = True
+        print(flask_session['threat_source'])
     if page == 6:
         req = request.form.to_dict()
         flask_session['type_of_risk'] = []
@@ -120,10 +127,13 @@ def quest(page):
         component_obj = db.session.query(ComponentObjectOfInfluence).filter(
             ComponentObjectOfInfluence.ObjectOfInfluenceId.in_(object_inf)
         ).all()
-        for t, o in zip(flask_session['threat_source'], component_obj):
+        print('threat_source', flask_session['threat_source'])
+        print('component_obj', component_obj)
+        print('threat_source_level', flask_session['threat_source_level'])
+        for t, o, l in zip(flask_session['threat_source'], component_obj, flask_session['threat_source_level']):
             threat_db = db.session.query(Threat).filter(
                 Threat.ObjectOfInfluence.ilike("%" + o.text + "%"), Threat.ThreatSource
-                .ilike("%" + t + "%")
+                .ilike("%" + threat_level[l] + "%"), Threat.ThreatSource.ilike("%" + t + "%")
             ).all()
             if len(threat_db) > 0:
                 threats_picked.extend(threat_db)

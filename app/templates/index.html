@@ -49,13 +49,13 @@
                                 {% for q in Options%}
                                 <div class="checkboxes" id="checkboxes">
                                     <div style="display: flex; flex-direction: column;">
-                                        <input id="question" type="checkbox" name="{{q.id}}" value="{{q.text}}"
+                                        <input id="{{q.id}}" type="checkbox" name="{{q.id}}" value="{{q.text}}"
                                         class="checkbox-question" onchange="pickInfoSystem(value)">
-                                        <label for="question">{{q}}</label>
+                                        <label for="{{q.id}}">{{q}}</label>
                                         {% if PageNumber == 0 %}
                                         <div class="checkbox-question-more" id="{{q.text}}_more"
                                             style=" flex-direction: column;">
-                                            <img src="./table.jpg" alt="Здесь должна быть таблица">
+<!--                                            <img src="../static/table.jpg" alt="Здесь должна быть таблица">-->
                                         </div>
                                         {%endif%}
                                     </div>
@@ -86,7 +86,7 @@
     <footer class="footer">
         <div class="container">
             <div class="footer__inner">
-                <img src="./logo.png" alt="" class="footer__img">
+                <img src="../static/logo.png" alt="" class="footer__img">
                 <a class="footer__link" href="tel:+79538717747">+7 953 871 77 47</a>
             </div>
         </div>
@@ -99,22 +99,48 @@
         {
         var boxes = document.getElementsByClassName('checkbox-question');
         if (boxes[numb].checked == true) {
-        for (let i = 1; i <= Object.keys(quests).length; i++) { const paragraphElementHead=document.createElement("p");
-            const head=document.createElement("h3"); paragraphElementHead.className='paragraph_label' + String(numb)
+        for (let i = 1; i <= Object.keys(quests).length; i++)
+        { const paragraphElementHead=document.createElement("div");
+            const head=document.createElement("h3");
+            paragraphElementHead.className='paragraph_label' + String(numb)
             head.className='head_label_' + String(numb);
             head.innerHTML=quests["quest_" + String(i)];
+            const imageElement = document.createElement('img');
+            switch (quests['quest_'+String(i)]){
+                case 'Социальная значимость':
+                    imageElement.src = "../static/social.jpg";
+                    break;
+                case 'Политическая значимость':
+                    imageElement.src = "../static/political.jpg";
+                    break;
+                case 'Экономическая значимость':
+                    imageElement.src = "../static/economic.jpg";
+                    break;
+                case 'Экологическая значимость':
+                    imageElement.src = "../static/eco.jpg";
+                    break;
+                case 'Значимость для обеспечения обороны страны, безопасности государства и правопорядка':
+                    imageElement.src = "../static/defence.jpg";
+                    break;
+            }
+            head.appendChild(imageElement);
             paragraphElementHead.appendChild(head);
             document.getElementById(value+'_more').appendChild(paragraphElementHead)
             for (let j=1; j <=Object.keys(options).length; j++)
-            { if (options["quest_" + String(i) + "_" + String(j)] !=undefined) {
-            const paragraphElement=document.createElement("p"); const input=document.createElement("input"); const
-            label=document.createElement("label"); input.type='checkbox' ; input.id=String(numb);
-            input.className='checkbox-question' ; input.value=options["quest_" + String(i) + '_' + String(j)];
+            { if (options["quest_" + String(i) + "_" + String(j)] !=undefined)
+            {
+            const paragraphElement=document.createElement("div");
+            const input=document.createElement("input");
+            const label=document.createElement("label");
+            input.type='checkbox' ;
+            input.id=String(quests['quest_'+String(i)] + j);
+            input.className='checkbox-question-more' ; input.value=options["quest_" + String(i) + '_' + String(j)];
             input.setAttribute("onchange","pickInfoSystem(value)")
                 label.id='label_' + String(numb);
             label.className='checkbox_label' + String(numb)
-                label.innerHTML=options["quest_" + String(i) + '_' +
-            String(j)]; label.insertBefore(input, label.firstChild); paragraphElement.appendChild(input);
+                label.innerHTML=options["quest_" + String(i) + '_' + String(j)];
+            label.setAttribute('for', String(quests['quest_'+String(i)] + j));
+            label.insertBefore(input, label.firstChild); paragraphElement.appendChild(input);
             paragraphElement.appendChild(label); paragraphElementHead.appendChild(paragraphElement); } }
             more_q=document.getElementById(value+'_more')
             more_q.appendChild(paragraphElementHead) } } if
@@ -144,15 +170,10 @@
                 'quest_4_1': '1 тип','quest_4_2': '2 тип','quest_4_3': '3 тип'}
             const kii_quests = {'quest_1': 'Социальная значимость','quest_2': 'Политическая значимость',
             'quest_3': 'Экономическая значимость','quest_4': 'Экологическая значимость' ,
-            'quest_5': 'Значимость для обеспечения обороны страны, безопасности государства и правопорядка'}
-            const kii_options = {'quest_1_1': '1 категория','quest_1_2': '2 категория',
-            'quest_1_3': '3 категория','quest_2_1': '1 категория',
-            'quest_2_2': '2 категория','quest_2_3': '3 категория',
-            'quest_3_1': '1 категория', 'quest_3_2': '2 категория',
-            'quest_3_3': '3 категория','quest_4_1': '1 категория',
-            'quest_4_2': '2 категория','quest_4_3': '3 категория',
-            'quest_5_1': '1 категория',
-            'quest_5_2': '2 категория','quest_5_3': '3 категория',}
+            'quest_5': 'Значимость для обеспечения обороны страны, безопасности государства и правопорядка',
+                'quest_6':'Выберите значимость (политическую...) далее выберите категорию значимости ОДНУ'}
+            const kii_options = {'quest_6_1': '1 категория',
+            'quest_6_2': '2 категория','quest_6_3': '3 категория'}
 
             const social_quests = {'quest_1': 'Социальная значимость'}
 
@@ -197,10 +218,30 @@
             }
             function save() {
             const page = {{PageNumber}};
-            const boxes = document.getElementsByClassName('checkbox-question');
+            const boxes = document.querySelectorAll('input');
             if (page === 0){
-            for (let i = 0; i <= boxes.length; i++) { try { localStorage.setItem(boxes[i].value, boxes[i].checked); }
-                catch (e) { console.log(e) } } } } window.addEventListener('change', save);
+            for (let i = 0; i <= boxes.length; i++) {
+                try { localStorage.setItem(boxes[i].value, boxes[i].checked);
+                }
+                catch (e)
+                { console.log(e)
+                }
+            }
+            }
+        } window.addEventListener('change', save);
+        function save_more(){
+           const page = {{PageNumber}};
+            const boxes = document.getElementsByClassName('checkbox-question-more');
+            if (page === 0){
+            for (let i = 0; i <= boxes.length; i++) {
+                try { localStorage.setItem(boxes[i].value, boxes[i].checked);
+                }
+                catch (e)
+                { console.log(e)
+                }
+            }
+            }
+        }window.addEventListener('change', save_more);
 
         window.addEventListener("change", get_def_class_gis)
         window.addEventListener("change", get_def_class_ispdn)
@@ -248,21 +289,22 @@
                 console.log(type)
                 break; } } let user_input=[category,employs,number];
                 filtered_data=data.filter(function(item) { return item[0]===user_input[0] && item[1]===user_input[1] &&
-                item[2]===user_input[2]; }); elements=''
-            if (type==='1 тип' ){ elements=filtered_data[0][3] } if
-                (type==='2 тип' ){ elements=filtered_data[0][4] }
+                item[2]===user_input[2]; });
+                elements='';
+            if (type==='1 тип' ){
+                elements=filtered_data[0][3]
+            } if (type==='2 тип' )
+            {
+                elements=filtered_data[0][4]
+            }
             if (type==='3 тип' )
-                { elements=filtered_data[0][5] }
-                localStorage.setItem('ispdn', elements) //console.log(elements.slice(-3))
-            // const filteredArr=data_uz.filter((el)=> elements.every((element) => el.includes(element)));
-                //const result = filteredArr.map((el) => el[data_uz[0].indexOf(type)]);
+                {
+                    elements=filtered_data[0][5]
+                }
+                localStorage.setItem('ispdn', elements);
+
                 console.log(filtered_data);
                 console.log(elements);
-
-                //console.log(result)
-
-
-                //console.log(filtered_data);
 
                 }
                 function makeRequest() {
