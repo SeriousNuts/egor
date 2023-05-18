@@ -49,9 +49,9 @@
                                 {% for q in Options%}
                                 <div class="checkboxes" id="checkboxes">
                                     <div style="display: flex; flex-direction: column;">
-                                        <label>{{q}}</label>
-                                        <input type="checkbox" name="{{q.id}}" value="{{q.text}}"
-                                            class="checkbox-question" onchange="pickInfoSystem(value)">
+                                        <input id="question" type="checkbox" name="{{q.id}}" value="{{q.text}}"
+                                        class="checkbox-question" onchange="pickInfoSystem(value)">
+                                        <label for="question">{{q}}</label>
                                         {% if PageNumber == 0 %}
                                         <div class="checkbox-question-more" id="{{q.text}}_more"
                                             style=" flex-direction: column;">
@@ -83,7 +83,14 @@
             </div>
         </section>
     </main>
-
+    <footer class="footer">
+        <div class="container">
+            <div class="footer__inner">
+                <img src="./logo.png" alt="" class="footer__img">
+                <a class="footer__link" href="tel:+79538717747">+7 953 871 77 47</a>
+            </div>
+        </div>
+    </footer>
     <script>
         var boxes = document.getElementsByClassName('box');
 
@@ -270,7 +277,7 @@
                 httpRequest.send(data);
                 window.location.replace('/quest/show_result/result_id');
                 }
-        </script>
+    </script>
 </body>
 
 </html>
