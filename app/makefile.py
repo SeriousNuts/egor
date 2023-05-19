@@ -12,7 +12,7 @@ from docxtpl import DocxTemplate
 from flask_login import current_user
 
 from app import db, models
-from app.models import Threat, TechTactics, ThreatSource
+from app.models import Threat, TechTactics, ThreatSource, TypeOfNegativeConseq, TypeOfRisks
 
 #   каталог для загружаемых файлов
 folder_name_in = str(Path(Path.cwd(), 'app', 'filestorage'))
@@ -32,9 +32,11 @@ class Report:
     ispdn = ''
     realiz = {}
     components = {}
+    kii = ''
+    negative_conseq = []
 
     def init(self, title, threat_sources, objects_of_influence, threats, risks, threaters,
-             defence_class, gis, ispdn, realiz, components):
+             defence_class, gis, ispdn, realiz, components, kii, negative_conseq):
         self.title = title
         self.threat_sources = threat_sources
         self.objects_of_influence = objects_of_influence
@@ -46,6 +48,8 @@ class Report:
         self.ispdn = ispdn
         self.realiz = realiz
         self.components = components
+        self.kii = kii
+        self.negative_conseq = negative_conseq
 
 
 class Threater:
@@ -124,6 +128,20 @@ def findthreats(threats):
     return threats_to_temp
 
 
+def findrisks(risks, negative):
+    risks_neg = {}
+    for r in risks:
+        risks_db = db.session.query(TypeOfRisks.id).filter(
+            TypeOfRisks.text == r
+        )
+        negative_cons = db.session.query(TypeOfNegativeConseq).filter(
+            TypeOfNegativeConseq.typeId.in_(risks_db),
+            TypeOfNegativeConseq.textin_(negative)
+        ).all()
+        risks_neg.update({r: negative_cons})
+    return risks_neg
+
+
 def makefile(report):
     template = DocxTemplate(str(Path(Path.cwd(), 'template.docx')))
     context = {
@@ -139,7 +157,9 @@ def makefile(report):
         'components': report.components,
         'gis': report.gis,
         'ispdn': report.ispdn,
-        'realiz': report.realiz
+        'realiz': report.realiz,
+        'kii': report.kii,
+        'negative_conseq': findrisks(report.risks, report.negative_conseq)
     }
 
     template.render(context)
@@ -156,7 +176,7 @@ def save_report(filename):
     try:
         f = models.Report(name=filename,
                           desc='потом будем его формировать',
-                          owner='test',
+                          owner=current_user.name,
                           date=datetime.fromtimestamp(timestamp),
                           file=blob_file
                           )

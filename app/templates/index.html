@@ -108,19 +108,19 @@
             const imageElement = document.createElement('img');
             switch (quests['quest_'+String(i)]){
                 case 'Социальная значимость':
-                    imageElement.src = "../static/social.jpg";
+                    imageElement.src = "../static/social.JPG";
                     break;
                 case 'Политическая значимость':
-                    imageElement.src = "../static/political.jpg";
+                    imageElement.src = "../static/political.JPG";
                     break;
                 case 'Экономическая значимость':
-                    imageElement.src = "../static/economic.jpg";
+                    imageElement.src = "../static/economic.JPG";
                     break;
                 case 'Экологическая значимость':
-                    imageElement.src = "../static/eco.jpg";
+                    imageElement.src = "../static/eco.JPG";
                     break;
                 case 'Значимость для обеспечения обороны страны, безопасности государства и правопорядка':
-                    imageElement.src = "../static/defence.jpg";
+                    imageElement.src = "../static/defence.JPG";
                     break;
             }
             head.appendChild(imageElement);
@@ -258,7 +258,8 @@
                     for (let i=1; i <=gis[0].length; i++)
                     { if (localStorage.getItem(gis[0][i])==='true' )
                     { levelIndex=i; break; } }
-                //console.log(uzIndex) //console.log(levelIndex) localStorage.setItem('ГИС_знач',gis[uzIndex][levelIndex])
+                //console.log(uzIndex) //console.log(levelIndex)
+                localStorage.setItem('ГИС_знач',gis[uzIndex][levelIndex])
         }
         function get_def_class_ispdn(){
                     data=[
@@ -303,10 +304,19 @@
                 }
                 localStorage.setItem('ispdn', elements);
 
-                console.log(filtered_data);
-                console.log(elements);
-
                 }
+                function kii_class(){
+                    kii = ['1 категория','2 категория','3 категория',];
+                    kii_level = ''
+                    for (let i = 0; i < kii.length; i++){
+                        if (localStorage.getItem(kii[i]) == 'true'){
+                            kii_level = kii[i];
+                            break;
+                        }
+                    }
+                    localStorage.setItem('kii_level', kii_level);
+                }
+                window.addEventListener('change', kii_class)
                 function makeRequest() {
                 const httpRequest = new XMLHttpRequest();
 

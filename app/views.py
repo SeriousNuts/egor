@@ -27,7 +27,7 @@ def load_user(user_id):
 
 @app.route('/quest/>', methods=['GET', 'POST'])
 @app.route('/quest/<int:page>', methods=['GET', 'POST'])
-# @login_required
+@login_required
 def quest(page):
     print(page, request.form.to_dict())
     threats = []
@@ -45,12 +45,16 @@ def quest(page):
         template = "index.html"
     else:
         template = "QuestionConformity.html"
-    if page == 1:
-        pass
+    if page == 0:
+        flask_session['objects_of_influence'] = []
+        flask_session['threater'] = []
+        flask_session['threat_source'] = []
+        flask_session['threat_source_level'] = []
+        flask_session['type_of_risk'] = []
+        flask_session['threats'] = []
+        flask_session['type_of_negative'] = []
     # условие для третьего вопроса, выводит в него только нужные объекты воздействия
     if page == 2:
-        flask_session.clear()
-        flask_session['objects_of_influence'] = []
         req = request.form.to_dict()
         object_inf_text = db.session.query(ObjectOfInfluence).filter(
             ObjectOfInfluence.object_name.in_(req.values())
@@ -63,7 +67,6 @@ def quest(page):
         )
         for k, r in req.items():
             flask_session['objects_of_influence'].append(r)
-
         components = OptionConfs.query.filter(
             OptionConfs.option_conf_1.in_(comp)
         ).all()
@@ -73,8 +76,7 @@ def quest(page):
         # options = object_inf_text.all()
         template = "in_work.html"
     if page == 3:
-        if not flask_session.modified:
-            flask_session.modified = True
+        pass
     if page == 4:
         #   сохраняем результаты предыдущего вопроса в flask_session
         flask_session['threater'] = []
@@ -118,6 +120,8 @@ def quest(page):
         ).all()
         options_list = type_of_neg_cons
     if page == 7:
+        req = request.form.to_dict()
+        flask_session['type_of_negative'] = [v for (k, v) in req.items()]
         threats_picked = []
         threat_level = {'H1': 'низким', 'H2': 'низким', 'H3': 'средним', 'H4': 'высоким'}
         print('objects_of_influence', flask_session['objects_of_influence'])
@@ -127,10 +131,11 @@ def quest(page):
         component_obj = db.session.query(ComponentObjectOfInfluence).filter(
             ComponentObjectOfInfluence.ObjectOfInfluenceId.in_(object_inf)
         ).all()
-        print('threat_source', flask_session['threat_source'])
         print('component_obj', component_obj)
         print('threat_source_level', flask_session['threat_source_level'])
-        for t, o, l in zip(flask_session['threat_source'], component_obj, flask_session['threat_source_level']):
+        threat_source = flask_session['threat_source'] * len(component_obj)
+        threat_source_level = flask_session['threat_source_level'] * len(component_obj)
+        for t, o, l in zip(threat_source, component_obj, threat_source_level):
             threat_db = db.session.query(Threat).filter(
                 Threat.ObjectOfInfluence.ilike("%" + o.text + "%"), Threat.ThreatSource
                 .ilike("%" + threat_level[l] + "%"), Threat.ThreatSource.ilike("%" + t + "%")
@@ -204,7 +209,6 @@ def set_result():
     req_params = request.get_json('/quest/result', silent=True)  # принимаем результаты в формате json
     if req_params is not None:
         print('ls', req_params)
-        #print(type(req_params))
         print(req_params.get('data', '').get('4', ''))
         print('gis', req_params.get('data', '').get('ГИС_знач', ''))
         print('ispdn', req_params.get('data', '').get('ispdn', ''))
@@ -223,10 +227,9 @@ def set_result():
                     realiz=json.loads(req_params.get('data', '').get('8', '')),
                     defence_class='',
                     components=req_params.get('data', '').get('4', ''),
+                    kii=req_params.get('data', '').get('kii_level', ''),
+                    negative_conseq=flask_session['type_of_negative']
                     )
-        # ispdn = req_params['ispdn'],
-        # gis = req_params['ГИС_знач'],
-        # realiz = req_params['8']
 
         filename = makefile(report)
         save_report(filename)
@@ -270,10 +273,9 @@ def register_form():
     if form is not None:
         try:
             newuser = User()
-            newuser.name = form['username']
+            newuser.name = current_user.name
             newuser.set_password(form['password'])
-            newuser.UUID = 'str(uuid0.generate())'
-            u: User = models.User(name=newuser.name, password=newuser.password, UUID=newuser.UUID)  # type: ignore
+            u: User = models.User(name=newuser.name, password=newuser.password)  # type: ignore
             db.session.add(u)
             db.session.commit()
             return redirect(url_for('main_page'))
@@ -298,11 +300,12 @@ def personal_account():
 def download(filename=None):
     if filename is not None:
         file = models.Report.query.filter(
-            models.Report.name == filename
+            models.Report.name == filename,
+            models.Report.owner == current_user.name
         ).first()
     else:
         file = models.Report.query.filter(
-            models.Report.owner == 'test',
+            models.Report.owner == current_user.name,
         ).order_by(models.Report.date.desc()).limit(1).first()
     download_string = readreport(file.file, file.name)
     return send_from_directory(download_string, file.name)
