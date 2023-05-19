@@ -273,7 +273,7 @@ def register_form():
     if form is not None:
         try:
             newuser = User()
-            newuser.name = current_user.name
+            newuser.name = form['username']
             newuser.set_password(form['password'])
             u: User = models.User(name=newuser.name, password=newuser.password)  # type: ignore
             db.session.add(u)
