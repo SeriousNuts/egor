@@ -62,7 +62,7 @@ class Threater:
         self.threater = threater
         self.threat_level = threat_level
         self.threat_point = threat_point
-        self.category = category
+        self.category = (category.replace("',)", '')).replace("('", "")# убираем лишние символы
 
 
 # из полного текста угроз получаем её имя
@@ -97,7 +97,7 @@ def merge_dicts(lst):
     res = {}
     for i in range(len(lst)):
         for k, v in lst[i].items():
-            res[k] = res.get(k, '') + " : " + v
+            res[k] = res.get(k, '') + v
     return res
 
 
@@ -113,7 +113,7 @@ def threaters(lst):
                 category = db.session.query(ThreatSource.category).filter(
                     ThreatSource.object_name == k
                 ).first()
-                threat.init(k, lst[k + ph], lst[k], str(category))
+                threat.init(k, lst[k + ph], lst[k], (str(category)))
                 test.append(threat)
     return test
 
@@ -136,7 +136,7 @@ def findrisks(risks, negative):
         )
         negative_cons = db.session.query(TypeOfNegativeConseq).filter(
             TypeOfNegativeConseq.typeId.in_(risks_db),
-            TypeOfNegativeConseq.textin_(negative)
+            TypeOfNegativeConseq.text.in_(negative)
         ).all()
         risks_neg.update({r: negative_cons})
     return risks_neg
@@ -184,7 +184,7 @@ def save_report(filename):
         db.session.commit()
         print('файл ' + filename + ' сохранён успешно')
     except Exception as e:
-        print(e)
+        print('save_report', e)
         db.session.rollback()
     finally:
         db.session.close()

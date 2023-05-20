@@ -1,4 +1,5 @@
 import json
+import traceback
 from urllib.parse import urlparse, urljoin
 
 from flask import render_template, request, redirect, url_for, send_from_directory
@@ -124,15 +125,15 @@ def quest(page):
         flask_session['type_of_negative'] = [v for (k, v) in req.items()]
         threats_picked = []
         threat_level = {'H1': 'низким', 'H2': 'низким', 'H3': 'средним', 'H4': 'высоким'}
-        print('objects_of_influence', flask_session['objects_of_influence'])
-        print('threat_source', flask_session['threat_source'])
+        #print('objects_of_influence', flask_session['objects_of_influence'])
+        #print('threat_source', flask_session['threat_source'])
         object_inf = db.session.query(ObjectOfInfluence.id).filter(
             ObjectOfInfluence.object_name.in_(flask_session['objects_of_influence']))
         component_obj = db.session.query(ComponentObjectOfInfluence).filter(
             ComponentObjectOfInfluence.ObjectOfInfluenceId.in_(object_inf)
         ).all()
-        print('component_obj', component_obj)
-        print('threat_source_level', flask_session['threat_source_level'])
+        #print('component_obj', component_obj)
+        #print('threat_source_level', flask_session['threat_source_level'])
         threat_source = flask_session['threat_source'] * len(component_obj)
         threat_source_level = flask_session['threat_source_level'] * len(component_obj)
         for t, o, l in zip(threat_source, component_obj, threat_source_level):
@@ -142,6 +143,8 @@ def quest(page):
             ).all()
             if len(threat_db) > 0:
                 threats_picked.extend(threat_db)
+        visited = set()
+        threats_picked[:] = [x for x in threats_picked if x not in visited and not visited.add(x)]
         options_list = threats_picked
 
     if page == 8:
@@ -205,16 +208,17 @@ def editor_option():
 
 
 @app.route('/quest/result', methods=['GET', 'POST'])
+@login_required
 def set_result():
     req_params = request.get_json('/quest/result', silent=True)  # принимаем результаты в формате json
     if req_params is not None:
         print('ls', req_params)
-        print(req_params.get('data', '').get('4', ''))
-        print('gis', req_params.get('data', '').get('ГИС_знач', ''))
-        print('ispdn', req_params.get('data', '').get('ispdn', ''))
-        print('realiz', req_params.get('data', '').get('8', ''))
-        print(type(req_params.get('data', '').get('8', '')))
-        print(flask_session['threater'])
+        #print(req_params.get('data', '').get('4', ''))
+        #print('gis', req_params.get('data', '').get('ГИС_знач', ''))
+        #print('ispdn', req_params.get('data', '').get('ispdn', ''))
+        #print('realiz', req_params.get('data', '').get('8', ''))
+        #print(type(req_params.get('data', '').get('8', '')))
+        #print(flask_session['threater'])
         report = Report()
         report.init('Отчёт',
                     flask_session['threat_source'],
@@ -230,9 +234,11 @@ def set_result():
                     kii=req_params.get('data', '').get('kii_level', ''),
                     negative_conseq=flask_session['type_of_negative']
                     )
-
-        filename = makefile(report)
-        save_report(filename)
+        try:
+            filename = makefile(report)
+            save_report(filename)
+        except Exception as e:
+            print(traceback.format_exc())
 
     return render_template('result.html')
 
@@ -296,7 +302,7 @@ def personal_account():
 
 @app.route('/download')
 @app.route('/download/<filename>')
-# @login_required
+@login_required
 def download(filename=None):
     if filename is not None:
         file = models.Report.query.filter(
