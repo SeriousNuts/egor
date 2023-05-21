@@ -47,6 +47,13 @@ def quest(page):
     else:
         template = "QuestionConformity.html"
     if page == 0:
+        # flask_session.pop('objects_of_influence', None)
+        # flask_session.pop('threater', None)
+        # flask_session.pop('threat_source', None)
+        # flask_session.pop('threat_source_level', None)
+        # flask_session.pop('type_of_risk', None)
+        # flask_session.pop('threats', None)
+        # flask_session.pop('type_of_negative', None)
         flask_session['objects_of_influence'] = []
         flask_session['threater'] = []
         flask_session['threat_source'] = []
@@ -56,10 +63,11 @@ def quest(page):
         flask_session['type_of_negative'] = []
     # условие для третьего вопроса, выводит в него только нужные объекты воздействия
     if page == 2:
+        flask_session['objects_of_influence'] = []
         req = request.form.to_dict()
-        object_inf_text = db.session.query(ObjectOfInfluence).filter(
-            ObjectOfInfluence.object_name.in_(req.values())
-        )
+        # object_inf_text = db.session.query(ObjectOfInfluence).filter(
+        #     ObjectOfInfluence.object_name.in_(req.values())
+        # )
         object_inf = db.session.query(ObjectOfInfluence.id).filter(
             ObjectOfInfluence.object_name.in_(req.values())
         )
@@ -68,9 +76,9 @@ def quest(page):
         )
         for k, r in req.items():
             flask_session['objects_of_influence'].append(r)
-        components = OptionConfs.query.filter(
-            OptionConfs.option_conf_1.in_(comp)
-        ).all()
+        # components = OptionConfs.query.filter(
+        #     OptionConfs.option_conf_1.in_(comp)
+        # ).all()
         if not flask_session.modified:
             flask_session.modified = True
         # option_confs = components
@@ -125,15 +133,15 @@ def quest(page):
         flask_session['type_of_negative'] = [v for (k, v) in req.items()]
         threats_picked = []
         threat_level = {'H1': 'низким', 'H2': 'низким', 'H3': 'средним', 'H4': 'высоким'}
-        #print('objects_of_influence', flask_session['objects_of_influence'])
-        #print('threat_source', flask_session['threat_source'])
+        # print('objects_of_influence', flask_session['objects_of_influence'])
+        # print('threat_source', flask_session['threat_source'])
         object_inf = db.session.query(ObjectOfInfluence.id).filter(
             ObjectOfInfluence.object_name.in_(flask_session['objects_of_influence']))
         component_obj = db.session.query(ComponentObjectOfInfluence).filter(
             ComponentObjectOfInfluence.ObjectOfInfluenceId.in_(object_inf)
         ).all()
-        #print('component_obj', component_obj)
-        #print('threat_source_level', flask_session['threat_source_level'])
+        # print('component_obj', component_obj)
+        # print('threat_source_level', flask_session['threat_source_level'])
         threat_source = flask_session['threat_source'] * len(component_obj)
         threat_source_level = flask_session['threat_source_level'] * len(component_obj)
         for t, o, l in zip(threat_source, component_obj, threat_source_level):
@@ -213,12 +221,12 @@ def set_result():
     req_params = request.get_json('/quest/result', silent=True)  # принимаем результаты в формате json
     if req_params is not None:
         print('ls', req_params)
-        #print(req_params.get('data', '').get('4', ''))
-        #print('gis', req_params.get('data', '').get('ГИС_знач', ''))
-        #print('ispdn', req_params.get('data', '').get('ispdn', ''))
-        #print('realiz', req_params.get('data', '').get('8', ''))
-        #print(type(req_params.get('data', '').get('8', '')))
-        #print(flask_session['threater'])
+        # print(req_params.get('data', '').get('4', ''))
+        # print('gis', req_params.get('data', '').get('ГИС_знач', ''))
+        # print('ispdn', req_params.get('data', '').get('ispdn', ''))
+        # print('realiz', req_params.get('data', '').get('8', ''))
+        # print(type(req_params.get('data', '').get('8', '')))
+        # print(flask_session['threater'])
         report = Report()
         report.init('Отчёт',
                     flask_session['threat_source'],
