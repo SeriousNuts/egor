@@ -68,12 +68,12 @@ def quest(page):
         # object_inf_text = db.session.query(ObjectOfInfluence).filter(
         #     ObjectOfInfluence.object_name.in_(req.values())
         # )
-        object_inf = db.session.query(ObjectOfInfluence.id).filter(
-            ObjectOfInfluence.object_name.in_(req.values())
-        )
-        comp = db.session.query(ComponentObjectOfInfluence.text).filter(
-            ComponentObjectOfInfluence.ObjectOfInfluenceId.in_(object_inf)
-        )
+        # object_inf = db.session.query(ObjectOfInfluence.id).filter(
+        #     ObjectOfInfluence.object_name.in_(req.values())
+        # )
+        # comp = db.session.query(ComponentObjectOfInfluence.text).filter(
+        #     ComponentObjectOfInfluence.ObjectOfInfluenceId.in_(object_inf)
+        # )
         for k, r in req.items():
             flask_session['objects_of_influence'].append(r)
         # components = OptionConfs.query.filter(
@@ -160,7 +160,7 @@ def quest(page):
         req = request.form.to_dict()
         for k, v in req.items():
             flask_session['threats'].append(v)
-        options = [v.replace("'", "") for (k, v) in req.items()]
+        options = [k + ' - ' + v.replace("'", "") for (k, v) in req.items()]
         option_confs = db.session.query(OptionConfs).filter(OptionConfs.question_id == 9).all()
 
     return render_template(template,

@@ -62,7 +62,7 @@ class Threater:
         self.threater = threater
         self.threat_level = threat_level
         self.threat_point = threat_point
-        self.category = (category.replace("',)", '')).replace("('", "")# убираем лишние символы
+        self.category = (category.replace("',)", '')).replace("('", "")  # убираем лишние символы
 
 
 # из полного текста угроз получаем её имя
@@ -89,7 +89,7 @@ def find_tt(threats):
             TechTactics.threat_id == threat.id
         ).all()
         threat = threat_query.first()
-        threats_tt.update({threat.text: tt})
+        threats_tt.update({threat.id + ' - ' + threat.text: tt})
     return threats_tt
 
 
