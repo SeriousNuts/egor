@@ -49,8 +49,13 @@
                                 {% for q in Options%}
                                 <div class="checkboxes" id="checkboxes">
                                     <div style="display: flex; flex-direction: column;">
+                                        {% if PageNumber != 7 %}
                                         <input id="{{q.id}}" type="checkbox" name="{{q.id}}" value="{{q.text}}"
                                         class="checkbox-question" onchange="pickInfoSystem(value)">
+                                        {% else %}
+                                        <input id="{{q.id}}" type="checkbox" name="{{q.id}}" value="{{q.text}}"
+                                        class="checkbox-question" onchange="pickInfoSystem(value)" checked>
+                                        {% endif %}
                                         <label for="{{q.id}}">{{q}}</label>
                                         {% if PageNumber == 0 %}
                                         <div class="checkbox-question-more" id="{{q.text}}_more"

@@ -8,9 +8,9 @@ from flask_login import login_required, login_user, current_user, logout_user
 
 from app import app as app, login_manager
 from app import db, models
-from app.forms.LoginForm import LoginForm, RegistrationForm
+from app.forms.LoginForm import LoginForm
 from app.makefile import Report, makefile, save_report, readreport
-from app.models import Question, Option, ObjectOfInfluence, OptionConf, Result, User, \
+from app.models import Question, Option, ObjectOfInfluence, OptionConf, User, \
     ComponentObjectOfInfluence, OptionConfs, Threat, TypeOfNegativeConseq, TypeOfRisks
 
 
@@ -153,6 +153,7 @@ def quest(page):
                 threats_picked.extend(threat_db)
         visited = set()
         threats_picked[:] = [x for x in threats_picked if x not in visited and not visited.add(x)]
+        threats_picked.sort(key=lambda x: x.id)
         options_list = threats_picked
 
     if page == 8:

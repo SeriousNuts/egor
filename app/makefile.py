@@ -89,7 +89,7 @@ def find_tt(threats):
             TechTactics.threat_id == threat.id
         ).all()
         threat = threat_query.first()
-        threats_tt.update({threat.id + ' - ' + threat.text: tt})
+        threats_tt.update({str(threat.id) + ' - ' + threat.text: tt})
     return threats_tt
 
 
