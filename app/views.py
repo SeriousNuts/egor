@@ -47,13 +47,6 @@ def quest(page):
     else:
         template = "QuestionConformity.html"
     if page == 0:
-        # flask_session.pop('objects_of_influence', None)
-        # flask_session.pop('threater', None)
-        # flask_session.pop('threat_source', None)
-        # flask_session.pop('threat_source_level', None)
-        # flask_session.pop('type_of_risk', None)
-        # flask_session.pop('threats', None)
-        # flask_session.pop('type_of_negative', None)
         flask_session['objects_of_influence'] = []
         flask_session['threater'] = []
         flask_session['threat_source'] = []
@@ -155,7 +148,6 @@ def quest(page):
         threats_picked[:] = [x for x in threats_picked if x not in visited and not visited.add(x)]
         threats_picked.sort(key=lambda x: x.id)
         options_list = threats_picked
-
     if page == 8:
         flask_session['threats'] = []
         req = request.form.to_dict()
