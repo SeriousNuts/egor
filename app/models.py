@@ -5,8 +5,7 @@ from sqlalchemy.orm import DeclarativeBase
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from app import db
-
-
+#   классы для удобства работы с БД
 class Question(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     text = db.Column(db.String(1200), index=True, unique=True)

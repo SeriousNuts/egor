@@ -42,6 +42,7 @@ def quest(page):
     option_confs = OptionConfs.query.filter(
         OptionConfs.question_id == question[page].id
     ).all()
+    #   проверка типа вопроса если с выбором то один шаблон если нет то другой
     if question[page].type == 'pick':
         template = "index.html"
     else:
@@ -123,20 +124,22 @@ def quest(page):
         options_list = type_of_neg_cons
     if page == 7:
         req = request.form.to_dict()
+        # сохраняем негативные последсвтия
         flask_session['type_of_negative'] = [v for (k, v) in req.items()]
         threats_picked = []
+        # словарь с уровнями
         threat_level = {'H1': 'низким', 'H2': 'низким', 'H3': 'средним', 'H4': 'высоким'}
-        # print('objects_of_influence', flask_session['objects_of_influence'])
-        # print('threat_source', flask_session['threat_source'])
+        #   из базы данных выбираем объекты возд которые пользователь выбрал в 3 вопросе
         object_inf = db.session.query(ObjectOfInfluence.id).filter(
             ObjectOfInfluence.object_name.in_(flask_session['objects_of_influence']))
+        #   из базы получаем компоненты для всех выбранных объектов воздействия
         component_obj = db.session.query(ComponentObjectOfInfluence).filter(
             ComponentObjectOfInfluence.ObjectOfInfluenceId.in_(object_inf)
         ).all()
-        # print('component_obj', component_obj)
-        # print('threat_source_level', flask_session['threat_source_level'])
+        #   доводим списки для необходимой нам длинны
         threat_source = flask_session['threat_source'] * len(component_obj)
         threat_source_level = flask_session['threat_source_level'] * len(component_obj)
+        #   запускаем цикл по 3 спискам: компоненты, объекты возд, уровень объектов возд
         for t, o, l in zip(threat_source, component_obj, threat_source_level):
             threat_db = db.session.query(Threat).filter(
                 Threat.ObjectOfInfluence.ilike("%" + o.text + "%"), Threat.ThreatSource
@@ -144,9 +147,12 @@ def quest(page):
             ).all()
             if len(threat_db) > 0:
                 threats_picked.extend(threat_db)
+        #   удаляем повторки
         visited = set()
         threats_picked[:] = [x for x in threats_picked if x not in visited and not visited.add(x)]
+        # сортируем угрозы по возрастанию id
         threats_picked.sort(key=lambda x: x.id)
+        # кладём в переменную для шаблона
         options_list = threats_picked
     if page == 8:
         flask_session['threats'] = []
@@ -155,7 +161,7 @@ def quest(page):
             flask_session['threats'].append(v)
         options = [k + ' - ' + v.replace("'", "") for (k, v) in req.items()]
         option_confs = db.session.query(OptionConfs).filter(OptionConfs.question_id == 9).all()
-
+    # возращаем html шаблон и переменные которые будут в нём использоваться
     return render_template(template,
                            QuestionForm=question,
                            Options=options_list,
