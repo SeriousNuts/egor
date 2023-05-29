@@ -11,46 +11,33 @@
         integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe"
         crossorigin="anonymous"></script>
     <link rel="stylesheet" href="../static/style.css">
-    <title>Вход</title>
-</head>
-
-<body>
-       {% extends "base.html" %}
+    <title>Документация</title>
+        {% extends "base.html" %}
     {% block content %}
+</head>
+<body>
     <main>
-        <section class="login">
+        <section class="docs">
             <div class="container">
-                <div class="login__inner">
-                    <h1>Вход</h1>
-                    <form action="/check_login" method="post" style="width: max-content;">
-                        <label for="" class="mb-2">Имя пользователя</label>
-                        <input type="text" name="username" class="form-control mb-4">
-                        <label for="" class="mb-2">Пароль</label>
-                        <input type="password" name="password" class="form-control">
-                        <div class="d-flex align-items-center mt-2">
-                            <label for="remember">Запомнить меня</label>
-                            <input type="checkbox" name="" id="remember" class="ms-2">
-                        </div>
-                        <div class="btn-group mt-4">
-                            <button class="btn btn-danger">Войти</button>
-                            <a href="/register" class="btn btn-danger">Зарегистрироваться</a>
-                        </div>
-                    </form>
+                <div class="docs__inner">
+                    <h2>Используемая документация</h2>
+                  <a href="https://fstec.ru/dokumenty/vse-dokumenty/spetsialnye-normativnye-dokumenty/metodicheskij-dokument-ot-5-fevralya-2021-g">Методический документ ФСТЭК от 5 февараля 2021 г.</a>
+                  <a href="https://attack.mitre.org/tactics/enterprise/"> Тактики и соответствующие им техники по матрице MITRE ATT&CK</a>
                 </div>
             </div>
         </section>
     </main>
-  <footer class="footer">
+    <footer class="footer">
         <div class="container">
             <div class="footer__inner">
                 <img src="../static/logo.png" alt="" class="footer__img">
                 <a class="footer__img" href="/docs">Прочитать документацию</a>
                 <a class="footer__link" href="tel:+79538717747">+7 953 871 77 47</a>
+
             </div>
         </div>
     </footer>
-    </footer>
-
 </body>
 {% endblock %}
+
 </html>

@@ -329,3 +329,9 @@ def download(filename=None):
 def logout():
     logout_user()
     return redirect(url_for('login'))
+
+
+@app.route("/docs")
+@login_required
+def docx():
+    return render_template("docs.html")

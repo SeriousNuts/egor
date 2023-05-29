@@ -93,6 +93,16 @@ h1 {
 .quiz__inner h2 {
     margin-bottom: 24px;
 }
+.docs__inner h2{
+    margin-bottom: 24px;
+}
+.docs__inner {
+    display: flex;
+    flex-direction: column;
+}
+.docs__inner a {
+    text-decoration: underline;
+}
 
 .card {
     background-color: transparent;
